@@ -1,11 +1,18 @@
 
-/* BRYC Official Brand Colors */
+/* ===================================
+   FIND YOUR THING | BRYC
+   Official BRYC-inspired styling
+   =================================== */
+
+/* BRAND COLORS */
+
 :root {
   --purple: #3a3088;
   --pink: #ed125f;
   --cream: #faf8f4;
   --white: #ffffff;
   --text: #282536;
+  --gray: #696570;
 }
 
 * {
@@ -19,19 +26,26 @@ html {
 body {
   margin: 0;
   font-family: "Proxima Nova", Arial, sans-serif;
-  background: var(--cream);
+  background-color: var(--cream);
   color: var(--text);
   line-height: 1.6;
 }
 
+/* MAIN PAGE CONTAINER */
+
 .container {
-  width: min(1120px, 90%);
-  margin: auto;
+  width: 90%;
+  max-width: 1120px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* Navigation */
+/* ===================================
+   NAVIGATION
+   =================================== */
+
 .site-header {
-  background: white;
+  background-color: var(--white);
   border-bottom: 1px solid #e8e3df;
 }
 
@@ -65,10 +79,16 @@ body {
   font-weight: bold;
 }
 
-/* Welcome Section */
+/* ===================================
+   WELCOME SECTION
+   =================================== */
+
 .hero {
   padding-top: 85px;
   padding-bottom: 85px;
+
+  /* Center all hero content */
+  text-align: center;
 }
 
 .eyebrow {
@@ -76,9 +96,11 @@ body {
   font-size: 12px;
   font-weight: bold;
   letter-spacing: 2px;
+  text-transform: uppercase;
 }
 
-h1, h2 {
+h1,
+h2 {
   color: var(--purple);
   line-height: 1.15;
 }
@@ -97,6 +119,10 @@ h2 {
   max-width: 680px;
   font-size: 20px;
   color: #5b5763;
+
+  /* Center the paragraph */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .hero label {
@@ -104,6 +130,7 @@ h2 {
   margin-top: 36px;
   margin-bottom: 10px;
   font-weight: bold;
+  text-align: center;
 }
 
 .hero input {
@@ -113,36 +140,56 @@ h2 {
   padding: 19px;
   border: 1px solid #ded8d4;
   border-radius: 10px;
-  background: white;
+  background: var(--white);
   font-size: 16px;
+
+  /* Center the search box */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .hero input:disabled {
-  color: #777;
+  color: #777777;
   cursor: not-allowed;
 }
 
-/* Career Communities */
+/* ===================================
+   CAREER COMMUNITIES
+   =================================== */
+
 .communities {
+  padding-top: 30px;
   padding-bottom: 90px;
+
+  /* Center section content */
+  text-align: center;
 }
 
 .section-description {
-  color: #696570;
-  margin-bottom: 28px;
+  color: var(--gray);
+  max-width: 700px;
+  margin: 12px auto 30px;
+  text-align: center;
 }
+
+/* Community card layout */
 
 .community-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
+
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .community-card {
   padding: 32px;
   min-height: 190px;
   border-radius: 15px;
-  transition: transform 0.2s;
+  text-align: center;
+  transition: transform 0.2s ease;
 }
 
 .community-card:hover {
@@ -164,31 +211,71 @@ h2 {
 }
 
 /* Career Community Colors */
-.arts { background: #f7eaa7; }
-.business { background: #ddefe3; }
-.education { background: #ede2f7; }
-.engineering { background: #e8e8e8; }
-.health { background: #fce1e9; }
-.law { background: #e1e5fc; }
 
-/* Opportunities */
+.arts {
+  background-color: #f7eaa7;
+}
+
+.business {
+  background-color: #ddefe3;
+}
+
+.education {
+  background-color: #ede2f7;
+}
+
+.engineering {
+  background-color: #e8e8e8;
+}
+
+.health {
+  background-color: #fce1e9;
+}
+
+.law {
+  background-color: #e1e5fc;
+}
+
+/* ===================================
+   ALL OPPORTUNITIES
+   =================================== */
+
 .opportunities {
-  background: #f1eef8;
+  background-color: #f1eef8;
   padding: 75px 0 95px;
+
+  /* Center section content */
+  text-align: center;
 }
 
 .opportunity-card {
-  background: white;
+  background-color: var(--white);
   border: 1px solid #e6dfeb;
   border-radius: 16px;
   padding: 30px;
   max-width: 600px;
   box-shadow: 0 5px 20px #2927670a;
+
+  /* Center the card on the page */
+  margin-left: auto;
+  margin-right: auto;
+
+  /* Keep text inside cards easy to read */
+  text-align: left;
+}
+
+.opportunity-card h3 {
+  margin-top: 16px;
+  color: var(--text);
+}
+
+.opportunity-card p {
+  color: var(--gray);
 }
 
 .tag {
   display: inline-block;
-  background: #fde7ef;
+  background-color: #fde7ef;
   color: #be0e4c;
   padding: 6px 13px;
   border-radius: 20px;
@@ -196,17 +283,24 @@ h2 {
   font-weight: bold;
 }
 
-/* Footer */
+/* ===================================
+   FOOTER
+   =================================== */
+
 footer {
-  background: var(--purple);
-  color: white;
+  background-color: var(--purple);
+  color: var(--white);
   padding: 30px 0;
+  text-align: center;
 }
 
-/* Mobile */
+/* ===================================
+   TABLET AND MOBILE
+   =================================== */
+
 @media (max-width: 750px) {
   .community-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .hero {
@@ -216,6 +310,10 @@ footer {
 
   .nav {
     flex-wrap: wrap;
+  }
+
+  .intro {
+    font-size: 18px;
   }
 }
 
@@ -227,48 +325,12 @@ footer {
   .community-card {
     min-height: 150px;
   }
-}
 
-/* Center the main homepage content */
-.hero {
-  text-align: center;
-}
+  .brand span {
+    font-size: 12px;
+  }
 
-.hero .intro {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.hero label {
-  text-align: center;
-}
-
-.hero input {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Center Career Communities headings */
-.communities {
-  text-align: center;
-}
-
-.communities .section-description {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Center the Opportunities section */
-.opportunities {
-  text-align: center;
-}
-
-.opportunities .section-description {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.opportunity-card {
-  margin-left: auto;
-  margin-right: auto;
+  .nav-link {
+    font-size: 13px;
+  }
 }
