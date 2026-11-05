@@ -5,9 +5,117 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Find Your Thing | BRYC</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-  <h1>Find Your Thing</h1>
-  <p>Explore opportunities. Discover your interests. Find your thing!</p>
+  <!-- Navigation -->
+  <header class="site-header">
+    <div class="container nav">
+      <a href="#" class="brand">
+        <img src="BRYC Logo-Punched.png" alt="BRYC logo">
+        <span>FIND YOUR THING</span>
+      </a>
+      <a class="nav-link" href="#opportunities">
+        All Opportunities
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Welcome section -->
+    <section class="hero container">
+      <p class="eyebrow">YOUR INTERESTS. YOUR FUTURE.</p>
+      <h1>Find your thing.</h1>
+      <p class="intro">
+        Explore new interests, discover career pathways,
+        and find experiences that help you grow.
+        Your next big opportunity could start here!
+      </p>
+
+      <label for="search">Discover opportunities</label>
+      <input
+        id="search"
+        type="search"
+        placeholder="Search opportunities... (coming soon)"
+        disabled
+      >
+    </section>
+
+    <!-- Career Communities -->
+    <section class="communities container">
+      <p class="eyebrow">EXPLORE YOUR FUTURE</p>
+      <h2>Explore Career Communities</h2>
+      <p class="section-description">
+        Not sure what you want to do yet? That's okay!
+        Start with what interests you.
+      </p>
+
+      <div class="community-grid">
+        <article class="community-card arts">
+          <div class="community-icon">🎨</div>
+          <h3>Arts</h3>
+          <p>Axinite</p>
+        </article>
+
+        <article class="community-card business">
+          <div class="community-icon">💼</div>
+          <h3>Business</h3>
+          <p>Emerald</p>
+        </article>
+
+        <article class="community-card education">
+          <div class="community-icon">📚</div>
+          <h3>Education</h3>
+          <p>Amethyst</p>
+        </article>
+
+        <article class="community-card engineering">
+          <div class="community-icon">⚙️</div>
+          <h3>Engineering</h3>
+          <p>Obsidian</p>
+        </article>
+
+        <article class="community-card health">
+          <div class="community-icon">🩺</div>
+          <h3>Health</h3>
+          <p>Ruby</p>
+        </article>
+
+        <article class="community-card law">
+          <div class="community-icon">⚖️</div>
+          <h3>Law</h3>
+          <p>Sapphire</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Opportunities -->
+    <section id="opportunities" class="opportunities">
+      <div class="container">
+        <p class="eyebrow">DISCOVER WHAT'S POSSIBLE</p>
+        <h2>All Opportunities</h2>
+        <p class="section-description">
+          Explore programs, competitions, internships,
+          workshops, and other experiences.
+        </p>
+
+        <article class="opportunity-card">
+          <span class="tag">Coming Soon</span>
+          <h3>Your next opportunity starts here.</h3>
+          <p>
+            We're building a collection of exciting
+            opportunities for BRYC Fellows.
+          </p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      BRYC | Find Your Thing
+    </div>
+  </footer>
 </body>
 </html>
