@@ -228,3 +228,47 @@ footer {
     min-height: 150px;
   }
 }
+
+/* Center the main homepage content */
+.hero {
+  text-align: center;
+}
+
+.hero .intro {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero label {
+  text-align: center;
+}
+
+.hero input {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Center Career Communities headings */
+.communities {
+  text-align: center;
+}
+
+.communities .section-description {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Center the Opportunities section */
+.opportunities {
+  text-align: center;
+}
+
+.opportunities .section-description {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.opportunity-card {
+  margin-left: auto;
+  margin-right: auto;
+}
