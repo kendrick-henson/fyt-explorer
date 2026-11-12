@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Find Your Thing | BRYC</title>
-  <link rel="stylesheet" href="style.css?v=5">
+  <link rel="stylesheet" href="style.css?v=6">
 </head>
 
 <body>
@@ -145,22 +145,74 @@
       </div>
     </section>
 
-    <!-- Opportunities -->
-    <section id="opportunities" class="opportunities">
-      <div class="container">
-        <p class="eyebrow">DISCOVER WHAT'S POSSIBLE</p>
-        <h2>All Opportunities</h2>
-        <p class="section-description">
-          Explore programs, competitions, internships,
-          workshops, and other experiences.
-        </p>
-
-        <article class="opportunity-card">
-          <span class="tag">Start Exploring</span>
-          <h3>Find an experience that matches your interests.</h3>
-          <p>Explore approved programs, internships, competitions, camps, and more. Some opportunities are coming soon or offered again next year.</p>
-          <a class="browse-cta" href="opportunities.html">See all opportunities →</a>
-        </article>
+    <!-- Real Fellow experiences: original screenshot photo crops only -->
+    <section id="spotlights" class="fellow-spotlights" aria-labelledby="spotlights-heading">
+      <div class="container spotlight-container">
+        <p class="eyebrow">REAL FELLOWS. REAL EXPERIENCES.</p>
+        <h2 id="spotlights-heading">Finding Their Thing in Action</h2>
+        <p class="section-description">See how BRYC Fellows are exploring their interests, stepping into new experiences, and growing along the way.</p>
+        <div class="spotlight-carousel" aria-roledescription="carousel" aria-label="BRYC Fellow spotlights">
+          <div class="spotlight-stage" id="spotlight-stage" aria-live="polite">
+            <article class="spotlight-slide" aria-roledescription="slide" aria-label="1 of 5">
+              <div class="spotlight-photo"><img src="assets/fellow-spotlights/01-oneethia-poetry.png" alt="BRYC Fellow Oneethia at the Passing the Mic Festival" loading="eager"></div>
+              <div class="spotlight-story">
+                <span class="spotlight-category">ARTS · POETRY</span>
+                <h3>Oneethia finds her voice on stage.</h3>
+                <p>BRYC senior Oneethia performed at the University of Wisconsin–Madison's Passing the Mic Festival, sharing her poetry and creativity with a wider audience.</p>
+                <span class="spotlight-attribution">Fellow spotlight · BRYC Instagram</span>
+              </div>
+            </article>
+            <article class="spotlight-slide" aria-roledescription="slide" aria-label="2 of 5" hidden>
+              <div class="spotlight-photo"><img src="assets/fellow-spotlights/02-kaleb-orchestra.png" alt="BRYC Fellow Kaleb at a music competition with trophies" loading="lazy"></div>
+              <div class="spotlight-story">
+                <span class="spotlight-category">ARTS · MUSIC</span>
+                <h3>Kaleb earns orchestra honors.</h3>
+                <p>Kaleb was selected for the Louisiana Music Educators Association's All-State and Multi-District Honors Orchestra, recognizing his dedication to music.</p>
+                <span class="spotlight-attribution">Fellow spotlight · BRYC Instagram</span>
+              </div>
+            </article>
+            <article class="spotlight-slide" aria-roledescription="slide" aria-label="3 of 5" hidden>
+              <div class="spotlight-photo"><img src="assets/fellow-spotlights/03-engineering-fellows.png" alt="BRYC Engineering Fellows and ExxonMobil mentors gathered for a group photo" loading="lazy"></div>
+              <div class="spotlight-story">
+                <span class="spotlight-category">ENGINEERING · MENTORSHIP</span>
+                <h3>Engineering Fellows meet their mentors.</h3>
+                <p>Ten aspiring BRYC engineers met ExxonMobil mentors through the Engineering Fellows partnership. Monthly sessions from September through May focus on workplace skills and guidance on internships and careers.</p>
+                <span class="spotlight-attribution">Engineering Fellows · BRYC × ExxonMobil</span>
+              </div>
+            </article>
+            <article class="spotlight-slide" aria-roledescription="slide" aria-label="4 of 5" hidden>
+              <div class="spotlight-photo"><img src="assets/fellow-spotlights/04-health-fellows.png" alt="BRYC Health Fellow practicing a healthcare skill at the Community Health Fair" loading="lazy"></div>
+              <div class="spotlight-story">
+                <span class="spotlight-category">HEALTH · HANDS-ON LEARNING</span>
+                <h3>Exploring healthcare firsthand.</h3>
+                <p>Fellows wrapped up year three of the Wolfpack Health Fellows Academy with a Community Health Fair, exploring healthcare pathways alongside FranU and Baton Rouge Clinic partners.</p>
+                <span class="spotlight-attribution">Past Fellow experience · Wolfpack Health Fellows Academy</span>
+              </div>
+            </article>
+            <article class="spotlight-slide" aria-roledescription="slide" aria-label="5 of 5" hidden>
+              <div class="spotlight-photo"><img src="assets/fellow-spotlights/05-legal-fellows.png" alt="BRYC Legal Fellow speaking to an audience at the Legal Fellows program" loading="lazy"></div>
+              <div class="spotlight-story">
+                <span class="spotlight-category">LAW · YOUTH LEADERSHIP</span>
+                <h3>Legal Fellows take the lead.</h3>
+                <p>In partnership with the East Baton Rouge District Attorney's Office, BRYC Legal Fellows explored the justice system and strengthened their leadership and public speaking skills by designing questions for a community discussion.</p>
+                <span class="spotlight-attribution">Legal Fellows Institute · BRYC × EBR District Attorney's Office</span>
+              </div>
+            </article>
+          </div>
+          <div class="spotlight-controls">
+            <button type="button" class="spotlight-arrow" id="spotlight-prev" aria-label="Previous Fellow spotlight">←</button>
+            <span class="spotlight-position" id="spotlight-position" aria-live="polite">1 of 5</span>
+            <div class="spotlight-dots" id="spotlight-dots" aria-label="Choose a Fellow spotlight">
+              <button class="spotlight-dot is-active" type="button" aria-label="Show spotlight 1" aria-current="true"></button>
+              <button class="spotlight-dot" type="button" aria-label="Show spotlight 2"></button>
+              <button class="spotlight-dot" type="button" aria-label="Show spotlight 3"></button>
+              <button class="spotlight-dot" type="button" aria-label="Show spotlight 4"></button>
+              <button class="spotlight-dot" type="button" aria-label="Show spotlight 5"></button>
+            </div>
+            <button type="button" class="spotlight-arrow" id="spotlight-next" aria-label="Next Fellow spotlight">→</button>
+          </div>
+        </div>
+        <a class="spotlight-browse-link" href="opportunities.html">Ready to find your thing? Browse opportunities →</a>
       </div>
     </section>
   </main>
@@ -232,6 +284,46 @@
     script.src = endpoint;
     // A failed/slow feed leaves the three category links intact.
     document.head.append(script);
+  })();
+  </script>
+
+  <script>
+  (() => {
+    "use strict";
+    const stage = document.getElementById("spotlight-stage");
+    const controls = document.getElementById("spotlight-dots");
+    if (!stage || !controls) return;
+    const slides = Array.from(stage.querySelectorAll(".spotlight-slide"));
+    const dots = Array.from(controls.querySelectorAll(".spotlight-dot"));
+    const position = document.getElementById("spotlight-position");
+    let current = 0;
+    function show(index) {
+      current = (index + slides.length) % slides.length;
+      slides.forEach((slide, i) => { slide.hidden = i !== current; });
+      dots.forEach((dot, i) => {
+        dot.classList.toggle("is-active", i === current);
+        if (i === current) dot.setAttribute("aria-current", "true");
+        else dot.removeAttribute("aria-current");
+      });
+      position.textContent = (current + 1) + " of " + slides.length;
+    }
+    document.getElementById("spotlight-prev").addEventListener("click", () => show(current - 1));
+    document.getElementById("spotlight-next").addEventListener("click", () => show(current + 1));
+    dots.forEach((dot, i) => dot.addEventListener("click", () => show(i)));
+    const carousel = document.querySelector(".spotlight-carousel");
+    carousel.addEventListener("keydown", e => {
+      if (e.key === "ArrowLeft") { e.preventDefault(); show(current - 1); }
+      if (e.key === "ArrowRight") { e.preventDefault(); show(current + 1); }
+    });
+    let touchX;
+    stage.addEventListener("touchstart", e => { touchX = e.changedTouches[0].screenX; }, {passive:true});
+    stage.addEventListener("touchend", e => {
+      if (touchX === undefined) return;
+      const delta = e.changedTouches[0].screenX - touchX;
+      if (Math.abs(delta) > 55) show(current + (delta < 0 ? 1 : -1));
+      touchX = undefined;
+    }, {passive:true});
+    show(0);
   })();
   </script>
 </body>
