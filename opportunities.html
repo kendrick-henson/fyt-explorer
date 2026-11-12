@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explore Opportunities | BRYC Find Your Thing</title>
+<link rel="stylesheet" href="style.css?v=2">
+<style>
+body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp(35px,5vw,60px);margin:10px 0}.op-lead{max-width:740px;color:#5b5763}
+.op-filters{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:12px;padding:20px;border:1px solid #e6dfeb;border-radius:16px;background:white;margin:28px 0}
+.op-filters label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;color:#3a3088}
+.op-filters input,.op-filters select{font:inherit;font-weight:normal;width:100%;padding:12px;border:1px solid #ccc5d7;border-radius:8px;min-height:45px;background:white}
+.op-count{display:flex;justify-content:space-between;align-items:center;gap:15px;margin:18px 0;flex-wrap:wrap;color:#696570;font-size:14px}
+.op-count button{color:#3a3088;text-decoration:underline;border:none;background:none;cursor:pointer;font-weight:700}
+.op-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
+.op-item{border:1px solid #e6dfeb;background:white;border-radius:15px;padding:22px;display:flex;flex-direction:column;gap:11px;min-width:0}
+.op-item h2{font-size:20px;color:#282536;margin:0;overflow-wrap:anywhere}.op-org{color:#696570;font-size:13px;margin:0}
+.op-tags{display:flex;gap:5px;flex-wrap:wrap}.op-tags span{background:#ede7f8;color:#3a3088;font-size:11px;border-radius:40px;padding:4px 8px;font-weight:700}
+.op-tags span.past{background:#f7ead7;color:#704d24}
+.op-item p{margin:0;font-size:14px}.op-item .op-meta{color:#5b5763;font-size:12px;display:grid;gap:4px}
+.op-update{background:#f5f1fc;padding:12px;border-left:4px solid #3a3088;border-radius:4px 8px 8px 4px;font-size:13px}
+.op-links{display:flex;gap:9px;flex-wrap:wrap;margin-top:auto}.op-links a{background:#3a3088;color:white;border-radius:8px;text-decoration:none;padding:10px 12px;font-weight:700;font-size:13px}.op-links a.alt{background:#efeaf7;color:#3a3088}
+.op-notice{background:white;border:1px solid #e6dfeb;border-radius:14px;padding:28px;max-width:750px}
+.op-home{display:inline-block;color:#3a3088;text-decoration:underline;margin-top:12px}
+@media(max-width:950px){.op-grid{grid-template-columns:repeat(2,1fr)}.op-filters{grid-template-columns:1fr 1fr}}
+@media(max-width:650px){.op-grid,.op-filters{grid-template-columns:1fr}.op-main{padding:35px 0 65px}}
+</style>
+</head>
+<body>
+<header class="site-header"><div class="container nav">
+<a class="brand" href="index.html"><img src="BRYC Logo-Punched.png" alt="BRYC logo"><span>FIND YOUR THING</span></a>
+<a class="nav-link" href="index.html">← Career Communities</a>
+</div></header>
+<main class="op-main container">
+<p class="eyebrow">YOUR INTERESTS. YOUR FUTURE.</p><h1>Explore opportunities.</h1>
+<p class="op-lead">Find camps, internships, events, competitions, and more. Some programs are accepting applications; others are worth keeping an eye on for next time.</p>
+<div class="op-filters">
+<label for="q">Search<input id="q" type="search" placeholder="Try nursing, art, robotics…"></label>
+<label for="community">Career Community<select id="community"><option value="">All communities</option><option>Arts</option><option>Business</option><option>Education</option><option>Engineering</option><option>Health</option><option>Law</option><option>General Exploration</option></select></label>
+<label for="grade">Your grade<select id="grade"><option value="">Any grade</option><option value="8">8th</option><option value="9">9th</option><option value="10">10th</option><option value="11">11th</option><option value="12">12th</option></select></label>
+<label for="cycle">Program cycle<select id="cycle"><option value="">Any cycle</option><option>2027 Confirmed</option><option>Ongoing / Recurring</option><option>Previously Offered — Next Cycle Unconfirmed</option></select></label>
+</div>
+<div class="op-count"><span id="count" aria-live="polite">Loading opportunities…</span><button id="reset" type="button">Clear filters</button></div>
+<div class="op-grid" id="results"></div>
+<div id="error" class="op-notice" hidden><h2>Opportunities aren't available yet</h2><p id="error-detail">Please check back soon.</p><a class="op-home" href="index.html">Return to Career Communities</a></div>
+</main>
+<footer><div class="container">BRYC | Find Your Thing<br><small>Opportunity details may change. Always check the organizer's website before applying.</small></div></footer>
+<script src="fyt-config.js"></script>
+<script>
+(()=>{
+"use strict";
+const byId=id=>document.getElementById(id),approved=['Arts','Business','Education','Engineering','Health','Law','General Exploration'];
+const params=new URLSearchParams(location.search),fromUrl=params.get('community');
+if(approved.includes(fromUrl))byId('community').value=fromUrl;
+let opportunities=null;
+const element=(tag,content,cls)=>{const el=document.createElement(tag);el.textContent=String(content||'');if(cls)el.className=cls;return el};
+const list=x=>Array.isArray(x)?x:[];
+const safeUrl=x=>{try{const u=new URL(x);return u.protocol==='https:'?u.href:null}catch{return null}};
+function render(){
+if(!opportunities)return;
+const q=byId('q').value.trim().toLowerCase(),c=byId('community').value,g=byId('grade').value,cycle=byId('cycle').value;
+const matches=opportunities.filter(o=>(!c||list(o.careerCommunities).includes(c))&&(!g||list(o.eligibleGrades).includes(g))&&(!cycle||o.programCycle===cycle)&&(!q||[o.name,o.organization,o.type,o.description,...list(o.interestTags)].join(' ').toLowerCase().includes(q)));
+byId('count').textContent='Showing '+matches.length+' of '+opportunities.length+' approved opportunities';
+const results=byId('results');results.replaceChildren();
+if(!matches.length){results.append(element('div','Nothing matches these filters. Try another community or clear the search.','op-notice'));return;}
+for(const o of matches){
+const card=element('article','','op-item');
+card.append(element('p',o.organization,'op-org'),element('h2',o.name));
+const tags=element('div','','op-tags');for(const t of list(o.careerCommunities))tags.append(element('span',t));
+const cycleText=o.programCycle==='Previously Offered — Next Cycle Unconfirmed'?'Previously offered':o.programCycle;
+const ct=element('span',cycleText);if(o.programCycle==='Previously Offered — Next Cycle Unconfirmed')ct.className='past';tags.append(ct);card.append(tags);
+card.append(element('p',o.description));
+const meta=element('div','','op-meta');meta.append(element('span','Grades: '+list(o.eligibleGrades).join(', ')));if(o.type)meta.append(element('span','Type: '+o.type));if(o.cost)meta.append(element('span','Cost/pay: '+o.cost));card.append(meta);
+if(o.fellowUpdate)card.append(element('div',o.fellowUpdate,'op-update'));
+const links=element('div','','op-links');
+const url=safeUrl(o.url);if(url){const a=element('a','Explore program ↗');a.href=url;a.target='_blank';a.rel='noopener noreferrer';links.append(a)}
+const updates=safeUrl(o.organizerNotificationUrl);if(updates){const a=element('a','Organizer updates ↗','alt');a.href=updates;a.target='_blank';a.rel='noopener noreferrer';links.append(a)}
+// No BRYC Notify Me button until secure private name intake is deployed.
+card.append(links);results.append(card);
+}
+}
+function error(message){byId('count').textContent='Feed unavailable';byId('results').replaceChildren();byId('error').hidden=false;byId('error-detail').textContent=message}
+for(const id of ['q','community','grade','cycle'])byId(id).addEventListener(id==='q'?'input':'change',render);
+byId('reset').addEventListener('click',()=>{for(const id of ['q','community','grade','cycle'])byId(id).value='';history.replaceState(null,'',location.pathname);render()});
+let received=false;window.FYTFeedReceiver=payload=>{received=true;if(!payload||payload.ok!==true||!Array.isArray(payload.opportunities)){error('The listing service returned an error. Contact BRYC if this continues.');return}opportunities=payload.opportunities.filter(o=>o.id&&o.name);byId('error').hidden=true;render()};
+const endpoint=safeUrl(window.FYT_CONFIG?.publicFeedUrl);
+if(!endpoint){error('The data connection has not been activated yet. BRYC staff will finish setup before the Explorer launches.');return}
+const script=document.createElement('script');script.src=endpoint;script.onerror=()=>{if(!received)error('Could not load listings. Please try again later.')};document.head.append(script);
+setTimeout(()=>{if(!received)error('Loading took too long. Please try again later.')},15000);
+})();
+</script>
+</body></html>
