@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Find Your Thing | BRYC</title>
-  <link rel="stylesheet" href="style.css?v=4">
+  <link rel="stylesheet" href="style.css?v=5">
 </head>
 
 <body>
@@ -23,18 +23,69 @@
   </header>
 
   <main>
-    <!-- Welcome section -->
-    <section class="hero container">
-      <p class="eyebrow">YOUR INTERESTS. YOUR FUTURE.</p>
-      <h1>Find your thing.</h1>
-      <p class="intro">
-        Explore new interests, discover career pathways,
-        and find experiences that help you grow.
-        Your next big opportunity could start here!
-      </p>
+    <!-- Hero: search and live discovery previews -->
+    <section class="hero container" aria-labelledby="hero-title">
+      <div class="hero-content">
+        <p class="eyebrow">YOUR INTERESTS. YOUR FUTURE.</p>
+        <h1 id="hero-title">Find your thing.</h1>
+        <p class="intro">
+          Explore new interests, discover career pathways, and find experiences
+          that help you grow. Your next big opportunity could start here!
+        </p>
 
-      <label for="search">Discover opportunities</label>
-      <a class="browse-cta" href="opportunities.html">Browse all opportunities →</a>
+        <form class="hero-search" action="opportunities.html" method="get" role="search">
+          <label for="hero-query" class="visually-hidden">Search opportunities</label>
+          <span class="hero-search-icon" aria-hidden="true">⌕</span>
+          <input id="hero-query" name="q" type="search" autocomplete="off"
+            placeholder="Search interests, programs, careers…" required>
+          <button type="submit">Search <span aria-hidden="true">→</span></button>
+        </form>
+        <p class="hero-search-hint">Try
+          <a href="opportunities.html?q=Photography">photography</a>,
+          <a href="opportunities.html?q=Healthcare">healthcare</a>, or
+          <a href="opportunities.html?q=Robotics">robotics</a>
+        </p>
+        <a class="hero-all-link" href="opportunities.html">Or browse all opportunities <span aria-hidden="true">→</span></a>
+      </div>
+
+      <aside class="hero-discovery" aria-labelledby="discovery-title">
+        <div class="hero-discovery-header">
+          <p class="eyebrow">DISCOVER WHAT'S POSSIBLE</p>
+          <h2 id="discovery-title">A little inspiration.</h2>
+          <p>Real experiences for wherever your interests take you.</p>
+        </div>
+        <div class="preview-stack" id="featured-opportunities">
+          <!-- These useful links remain if the live opportunity feed is temporarily unavailable. -->
+          <a class="preview-card preview-health" href="opportunities.html?community=Health">
+            <span class="preview-icon" aria-hidden="true">🩺</span>
+            <span class="preview-card-copy">
+              <span class="preview-kicker">HEALTH</span>
+              <strong>Explore healthcare opportunities</strong>
+              <span class="preview-detail">Careers, summer programs, and volunteering</span>
+            </span>
+            <span class="preview-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a class="preview-card preview-arts" href="opportunities.html?community=Arts">
+            <span class="preview-icon" aria-hidden="true">🎨</span>
+            <span class="preview-card-copy">
+              <span class="preview-kicker">ARTS</span>
+              <strong>Find your creative side</strong>
+              <span class="preview-detail">Theater, journalism, design, and more</span>
+            </span>
+            <span class="preview-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a class="preview-card preview-general" href="opportunities.html?community=General%20Exploration">
+            <span class="preview-icon" aria-hidden="true">🧭</span>
+            <span class="preview-card-copy">
+              <span class="preview-kicker">GENERAL EXPLORATION</span>
+              <strong>Try something new</strong>
+              <span class="preview-detail">Leadership, service, and new experiences</span>
+            </span>
+            <span class="preview-arrow" aria-hidden="true">↗</span>
+          </a>
+        </div>
+        <p class="preview-footnote">New programs are added as BRYC verifies them.</p>
+      </aside>
     </section>
 
     <!-- Career Communities -->
@@ -119,5 +170,69 @@
       BRYC | Find Your Thing
     </div>
   </footer>
+
+  <!-- The same public-safe approved-opportunities feed used by the directory. -->
+  <script src="fyt-config.js"></script>
+  <script>
+  (() => {
+    "use strict";
+    const slots = [
+      {category: "Health", icon: "🩺", style: "preview-health"},
+      {category: "Arts", icon: "🎨", style: "preview-arts"},
+      {category: "General Exploration", icon: "🧭", style: "preview-general"}
+    ];
+    const stack = document.getElementById("featured-opportunities");
+    if (!stack) return;
+    const cycleRank = cycle => cycle === "2027 Confirmed" ? 0 :
+      cycle === "Ongoing / Recurring" ? 1 : 2;
+    const cycleLabel = cycle => cycle === "2027 Confirmed" ? "2027 confirmed" :
+      cycle === "Ongoing / Recurring" ? "Ongoing program" : "Previously offered";
+    const safeUrl = value => {
+      try {
+        const link = new URL(value);
+        return link.protocol === "https:" ? link.href : null;
+      } catch { return null; }
+    };
+    const span = (className, content) => {
+      const node = document.createElement("span");
+      node.className = className;
+      node.textContent = String(content || "");
+      return node;
+    };
+    window.FYTFeedReceiver = payload => {
+      if (!payload || payload.ok !== true || !Array.isArray(payload.opportunities)) return;
+      const cards = [];
+      for (const slot of slots) {
+        const item = payload.opportunities.filter(op =>
+          op && op.id && op.name && Array.isArray(op.careerCommunities) &&
+          op.careerCommunities.includes(slot.category))
+          .sort((a, b) => cycleRank(a.programCycle) - cycleRank(b.programCycle))[0];
+        if (!item) continue;
+        const card = document.createElement("a");
+        card.className = "preview-card " + slot.style;
+        card.href = "opportunities.html?q=" + encodeURIComponent(item.name);
+        const icon = span("preview-icon", slot.icon);
+        icon.setAttribute("aria-hidden", "true");
+        const copy = span("preview-card-copy", "");
+        copy.append(span("preview-kicker", slot.category.toUpperCase()));
+        const name = document.createElement("strong");
+        name.textContent = item.name;
+        copy.append(name, span("preview-detail", cycleLabel(item.programCycle)));
+        const arrow = span("preview-arrow", "↗");
+        arrow.setAttribute("aria-hidden", "true");
+        card.append(icon, copy, arrow);
+        cards.push(card);
+      }
+      // Preserve the category links if no approved previews are available.
+      if (cards.length === slots.length) stack.replaceChildren(...cards);
+    };
+    const endpoint = safeUrl(window.FYT_CONFIG && window.FYT_CONFIG.publicFeedUrl);
+    if (!endpoint) return;
+    const script = document.createElement("script");
+    script.src = endpoint;
+    // A failed/slow feed leaves the three category links intact.
+    document.head.append(script);
+  })();
+  </script>
 </body>
 </html>
