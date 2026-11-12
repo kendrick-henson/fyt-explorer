@@ -342,30 +342,37 @@ a.community-card:focus-visible,.browse-cta:focus-visible{outline:3px solid var(-
 .browse-cta{display:inline-block;margin-top:18px;padding:13px 23px;border-radius:9px;background:var(--purple);color:white;text-decoration:none;font-weight:700}
 .browse-cta:hover{background:#29216c;color:white}
 
-/* General Exploration: welcoming, full-width seventh community card */
+/* General Exploration: slightly wider than the standard cards, centered below Health */
 .community-card.general-exploration {
-  grid-column: 1 / -1;
-  min-height: 160px;
+  grid-column: 2 / 3;
+  width: 125%;
+  max-width: 480px;
+  justify-self: center;
+  min-height: 190px;
   background: linear-gradient(115deg, #e8e2fc 0%, #fce9f0 100%);
   border: 2px solid #afa5db;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 25px;
-  padding: 28px 38px;
-  text-align: left;
+  gap: 9px;
+  padding: 28px 28px;
+  text-align: center;
 }
-.general-exploration .community-icon { font-size: 53px; flex-shrink: 0; }
-.general-exploration .community-copy { max-width: 700px; }
+.general-exploration .community-icon { font-size: 42px; flex-shrink: 0; }
+.general-exploration .community-copy { max-width: 430px; }
 .general-exploration h3 { margin: 0 0 5px; color: var(--purple); }
-.general-exploration p { font-size: 16px; line-height: 1.5; }
+.general-exploration p { font-size: 14px; line-height: 1.5; }
 .general-exploration .community-action { display: inline-block; margin-top: 9px; color: var(--purple); font-weight: bold; }
-@media (max-width: 600px) {
+@media (max-width: 750px) {
   .community-card.general-exploration {
-    flex-direction: column;
-    text-align: center;
-    gap: 8px;
+    grid-column: 1 / -1;
+    width: min(75%, 520px);
+  }
+}
+@media (max-width: 450px) {
+  .community-card.general-exploration {
+    width: 100%;
     padding: 27px 24px;
   }
-  .general-exploration .community-icon { font-size: 42px; }
 }
