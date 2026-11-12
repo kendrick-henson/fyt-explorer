@@ -51,6 +51,8 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 const byId=id=>document.getElementById(id),approved=['Arts','Business','Education','Engineering','Health','Law','General Exploration'];
 const params=new URLSearchParams(location.search),fromUrl=params.get('community');
 if(approved.includes(fromUrl))byId('community').value=fromUrl;
+const incomingQuery=params.get('q');
+if(incomingQuery)byId('q').value=incomingQuery.slice(0,200);
 let opportunities=null;
 const element=(tag,content,cls)=>{const el=document.createElement(tag);el.textContent=String(content||'');if(cls)el.className=cls;return el};
 const list=x=>Array.isArray(x)?x:[];
@@ -58,7 +60,7 @@ const safeUrl=x=>{try{const u=new URL(x);return u.protocol==='https:'?u.href:nul
 function render(){
 if(!opportunities)return;
 const q=byId('q').value.trim().toLowerCase(),c=byId('community').value,g=byId('grade').value,cycle=byId('cycle').value;
-const matches=opportunities.filter(o=>(!c||list(o.careerCommunities).includes(c))&&(!g||list(o.eligibleGrades).includes(g))&&(!cycle||o.programCycle===cycle)&&(!q||[o.name,o.organization,o.type,o.description,...list(o.interestTags)].join(' ').toLowerCase().includes(q)));
+const matches=opportunities.filter(o=>(!c||list(o.careerCommunities).includes(c))&&(!g||list(o.eligibleGrades).includes(g))&&(!cycle||o.programCycle===cycle)&&(!q||[o.name,o.organization,o.type,o.description,o.fellowUpdate,o.commitment,o.location,...list(o.careerCommunities),...list(o.interestTags)].join(' ').toLowerCase().includes(q)));
 byId('count').textContent='Showing '+matches.length+' of '+opportunities.length+' approved opportunities';
 const results=byId('results');results.replaceChildren();
 if(!matches.length){results.append(element('div','Nothing matches these filters. Try another community or clear the search.','op-notice'));return;}
