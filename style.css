@@ -434,3 +434,38 @@ a.community-card:focus-visible,.browse-cta:focus-visible{outline:3px solid var(-
     padding: 27px 24px;
   }
 }
+
+/* Finding Their Thing in Action — original-photo carousel */
+.fellow-spotlights { padding: 70px 0 85px; background: #f1eef8; }
+.spotlight-container { max-width: 1080px; text-align: center; }
+.spotlight-container > h2 { margin: 10px 0; }
+.spotlight-container > .section-description { margin-bottom: 28px; }
+.spotlight-carousel { max-width: 940px; margin: 0 auto; }
+.spotlight-stage { background: #fff; border: 1px solid #e5deed; border-radius: 19px; overflow: hidden; box-shadow: 0 7px 28px rgba(58,48,136,.07); }
+.spotlight-slide { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); min-width: 0; }
+.spotlight-slide[hidden] { display: none !important; }
+.spotlight-photo { background: #eeeaf3; display: flex; justify-content: center; align-items: center; min-height: 360px; overflow: hidden; }
+.spotlight-photo img { display: block; width: 100%; max-height: 510px; height: auto; object-fit: contain; }
+.spotlight-story { display: flex; flex-direction: column; justify-content: center; text-align: left; padding: clamp(24px,4vw,48px); gap: 15px; }
+.spotlight-category { color: #c30d4a; font-size: 11px; letter-spacing: 1.5px; font-weight: 800; }
+.spotlight-story h3 { color: #3a3088; font-size: clamp(24px,3vw,33px); line-height: 1.2; margin: 0; }
+.spotlight-story p { color: #5d5868; line-height: 1.65; margin: 0; font-size: 16px; }
+.spotlight-attribution { font-size: 12px; font-weight: 700; color: #7a7480; margin-top: 10px; }
+.spotlight-controls { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 19px; }
+.spotlight-arrow { display: grid; place-items: center; border: 1px solid #c8bfdb; background: white; color: #3a3088; cursor: pointer; border-radius: 50%; width: 43px; height: 43px; font-size: 23px; }
+.spotlight-arrow:hover { background: #e6dff7; }
+.spotlight-arrow:focus-visible, .spotlight-dot:focus-visible { outline: 3px solid #ed125f; outline-offset: 3px; }
+.spotlight-position { color: #5f586a; font-size: 13px; font-weight: 700; min-width: 38px; }
+.spotlight-dots { display: flex; align-items: center; gap: 8px; }
+.spotlight-dot { border: 0; width: 10px; height: 10px; border-radius: 50%; padding: 0; background: #c9c1d6; cursor: pointer; }
+.spotlight-dot.is-active { background: #3a3088; transform: scale(1.2); }
+.spotlight-browse-link { display: inline-block; margin-top: 27px; font-size: 16px; font-weight: 700; color: #3a3088; text-decoration: underline; text-underline-offset: 4px; }
+@media (max-width: 760px) {
+  .fellow-spotlights { padding: 50px 0 65px; }
+  .spotlight-slide { grid-template-columns: 1fr; }
+  .spotlight-photo { min-height: 0; }
+  .spotlight-photo img { max-height: 470px; }
+  .spotlight-story { padding: 25px 27px 32px; gap: 12px; }
+  .spotlight-story h3 { font-size: 26px; }
+  .spotlight-story p { font-size: 15px; }
+}
