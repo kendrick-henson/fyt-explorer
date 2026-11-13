@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Explore Opportunities | BRYC Find Your Thing</title>
-<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="style.css?v=7">
 <style>
 body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp(35px,5vw,60px);margin:10px 0}.op-lead{max-width:740px;color:#5b5763}
 .op-filters{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:12px;padding:20px;border:1px solid #e6dfeb;border-radius:16px;background:white;margin:28px 0}
@@ -44,6 +44,7 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 <div id="error" class="op-notice" hidden><h2>Opportunities aren't available yet</h2><p id="error-detail">Please check back soon.</p><a class="op-home" href="index.html">Return to Career Communities</a></div>
 </main>
 <footer><div class="container">BRYC | Find Your Thing<br><small>Opportunity details may change. Always check the organizer's website before applying.</small></div></footer>
+<script src="opportunities-snapshot.js?v=20261113"></script>
 <script src="fyt-config.js"></script>
 <script>
 (()=>{
@@ -83,10 +84,29 @@ card.append(links);results.append(card);
 function error(message){byId('count').textContent='Feed unavailable';byId('results').replaceChildren();byId('error').hidden=false;byId('error-detail').textContent=message}
 for(const id of ['q','community','grade','cycle'])byId(id).addEventListener(id==='q'?'input':'change',render);
 byId('reset').addEventListener('click',()=>{for(const id of ['q','community','grade','cycle'])byId(id).value='';history.replaceState(null,'',location.pathname);render()});
-let received=false;window.FYTFeedReceiver=payload=>{received=true;if(!payload||payload.ok!==true||!Array.isArray(payload.opportunities)){error('The listing service returned an error. Contact BRYC if this continues.');return}opportunities=payload.opportunities.filter(o=>o.id&&o.name);byId('error').hidden=true;render()};
+let received=false;
+window.FYTFeedReceiver=payload=>{
+  if(!payload||payload.ok!==true||!Array.isArray(payload.opportunities)){
+    if(!received)error('The listing service returned an error. Contact BRYC if this continues.');
+    return;
+  }
+  received=true;
+  opportunities=payload.opportunities.filter(o=>o.id&&o.name);
+  byId('error').hidden=true;
+  render();
+};
+// Display an approved, public-safe snapshot immediately. The live Google
+// Apps Script feed refreshes it when available for anonymous visitors.
+if(window.FYT_STATIC_PAYLOAD)window.FYTFeedReceiver(window.FYT_STATIC_PAYLOAD);
 const endpoint=safeUrl(window.FYT_CONFIG?.publicFeedUrl);
-if(!endpoint){error('The data connection has not been activated yet. BRYC staff will finish setup before the Explorer launches.');return}
-const script=document.createElement('script');script.src=endpoint;script.onerror=()=>{if(!received)error('Could not load listings. Please try again later.')};document.head.append(script);
+if(!endpoint){
+  if(!received)error('The opportunity feed is temporarily unavailable. Please check back later.');
+  return;
+}
+const script=document.createElement('script');
+script.src=endpoint;
+script.onerror=()=>{if(!received)error('Could not load listings. Please try again later.')};
+document.head.append(script);
 setTimeout(()=>{if(!received)error('Loading took too long. Please try again later.')},15000);
 })();
 </script>
