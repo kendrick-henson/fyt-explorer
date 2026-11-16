@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Explore Opportunities | BRYC Find Your Thing</title>
-<link rel="stylesheet" href="style.css?v=9">
+<link rel="stylesheet" href="style.css?v=10">
 <style>
 body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp(35px,5vw,60px);margin:10px 0}.op-lead{max-width:740px;color:#5b5763}
 .op-filters{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:12px;padding:20px;border:1px solid #e6dfeb;border-radius:16px;background:white;margin:28px 0}
@@ -30,6 +30,22 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 .op-status.closed{background:#f4ebed;border-color:#a45d6a;color:#813c49}
 .op-status.previous{background:#eeece9;border-color:#9b9188;color:#645c55}
 .op-status.check{background:#eef1f4;border-color:#6d8396;color:#485f71}
+.op-interest-button{background:#333;color:white;border:0;border-radius:8px;cursor:pointer;font:inherit;font-size:13px;font-weight:700;padding:10px 12px}
+.op-interest-button:hover{background:#1e1e1e}
+.op-interest-button:focus-visible,.op-request-dialog button:focus-visible,.op-request-dialog input:focus-visible{outline:3px solid #ef185d;outline-offset:3px}
+.op-request-dialog{border:0;border-radius:18px;padding:0;width:min(94vw,520px);max-height:90vh;overflow:auto;box-shadow:0 20px 70px rgba(0,0,0,.22)}
+.op-request-dialog::backdrop{background:rgba(15,13,21,.5)}
+.op-request-dialog-content{padding:27px}
+.op-request-dialog h2{font-size:27px;margin:0 0 10px}
+.op-request-dialog p{font-size:14px;color:#59545c}
+.op-request-dialog label{display:block;font-size:13px;font-weight:700;margin:14px 0 6px}
+.op-request-dialog input[type=text]{display:block;width:100%;font:inherit;font-size:16px;border-radius:8px;border:1px solid #aaa;padding:12px}
+.op-request-dialog .op-request-consent{display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.5;font-weight:400}
+.op-request-consent input{margin-top:4px}
+.op-request-buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.op-request-buttons button{font:inherit;font-weight:700;border-radius:9px;padding:11px 17px;border:0;cursor:pointer}
+.op-request-buttons button[type=submit]{background:#ef185d;color:white}
+.op-request-buttons button[type=button]{background:#eee;color:#333}
 .op-links{display:flex;gap:9px;flex-wrap:wrap;margin-top:auto}.op-links a{background:#ef185d;color:white;border-radius:8px;text-decoration:none;padding:10px 12px;font-weight:700;font-size:13px}.op-links a:hover{background:#c6124d}.op-links a.alt{background:#efeaf7;color:#333333}.op-links a.alt:hover{background:#e1d8f1}
 .op-notice{background:white;border:1px solid #e6dfeb;border-radius:14px;padding:28px;max-width:750px}
 .op-home{display:inline-block;color:#333333;text-decoration:underline;margin-top:12px}
@@ -53,6 +69,28 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 </div>
 <div class="op-count"><span id="count" aria-live="polite">Loading opportunities…</span><button id="reset" type="button">Clear filters</button></div>
 <div class="op-grid" id="results"></div>
+<dialog id="interest-dialog" class="op-request-dialog" aria-labelledby="request-title">
+  <div class="op-request-dialog-content">
+    <h2 id="request-title">I'm Interested</h2>
+    <p id="request-program"></p>
+    <p id="request-explainer">This shares your interest with BRYC staff. It does not apply to the program or guarantee an automatic reminder.</p>
+    <form id="interest-form" method="POST" target="_blank">
+      <input type="hidden" id="request-opportunity-id" name="opportunityId">
+      <input type="hidden" name="consent" value="yes">
+      <div hidden aria-hidden="true"><label>Leave this blank<input name="website" type="text" tabindex="-1" autocomplete="off"></label></div>
+      <label for="request-first">Fellow first name</label>
+      <input id="request-first" name="firstName" type="text" maxlength="40" autocomplete="given-name" required>
+      <label for="request-last">Fellow last name</label>
+      <input id="request-last" name="lastName" type="text" maxlength="50" autocomplete="family-name" required>
+      <label class="op-request-consent"><input id="request-consent" type="checkbox" required> I understand this request will be shared with BRYC staff for follow-up.</label>
+      <div class="op-request-buttons">
+        <button type="submit">Send request to BRYC ↗</button>
+        <button id="request-cancel" type="button">Cancel</button>
+      </div>
+      <p class="op-request-note">Your request opens a BRYC confirmation page in a new tab. No Fellow information appears in the public opportunity feed.</p>
+    </form>
+  </div>
+</dialog>
 <div id="error" class="op-notice" hidden><h2>Opportunities aren't available yet</h2><p id="error-detail">Please check back soon.</p><a class="op-home" href="index.html">Return to Career Communities</a></div>
 </main>
 <footer><div class="container">BRYC | Find Your Thing<br><small>Opportunity details may change. Always check the organizer's website before applying.</small></div></footer>
@@ -70,6 +108,30 @@ let opportunities=null;
 const element=(tag,content,cls)=>{const el=document.createElement(tag);el.textContent=String(content||'');if(cls)el.className=cls;return el};
 const list=x=>Array.isArray(x)?x:[];
 const safeUrl=x=>{try{const u=new URL(x);return u.protocol==='https:'?u.href:null}catch{return null}};
+// The private Fellow intake form is only shown after BRYC deploys and configures
+// a separate Apps Script intake endpoint. No public names or sheet data are stored here.
+const intakeUrl=safeUrl(window.FYT_CONFIG?.interestIntakeUrl);
+const interestDialog=byId('interest-dialog');
+const interestForm=byId('interest-form');
+function openInterest(o,mode){
+  if(!intakeUrl)return;
+  const notify=mode==='notify';
+  byId('request-title').textContent=notify?'Notify Me':'I’m Interested';
+  byId('request-program').textContent=o.name;
+  byId('request-explainer').textContent=notify?
+    'Ask BRYC staff to follow up when there is news about this opportunity. This does not sign you up for organizer alerts or guarantee a reminder.':
+    'Let BRYC staff know you are interested. This is not an application to the program.';
+  byId('request-opportunity-id').value=o.id;
+  interestForm.action=intakeUrl;
+  byId('request-first').value='';
+  byId('request-last').value='';
+  byId('request-consent').checked=false;
+  interestDialog.showModal();
+}
+byId('request-cancel').addEventListener('click',()=>interestDialog.close());
+interestDialog.addEventListener('click',e=>{if(e.target===interestDialog)interestDialog.close();});
+interestForm.addEventListener('submit',()=>interestDialog.close());
+
 
 /* Date-aware labels are conservative: a future deadline alone does not prove
    that registration is open. All messaging is based on the public FYT feed. */
@@ -145,7 +207,15 @@ const meta=element('div','','op-meta');meta.append(element('span','Grades: '+lis
 const links=element('div','','op-links');
 const url=safeUrl(o.url);if(url){const a=element('a','Explore program ↗');a.href=url;a.target='_blank';a.rel='noopener noreferrer';links.append(a)}
 const updates=safeUrl(o.organizerNotificationUrl);if(updates){const a=element('a','Organizer updates ↗','alt');a.href=updates;a.target='_blank';a.rel='noopener noreferrer';links.append(a)}
-// No BRYC Notify Me button until secure private name intake is deployed.
+if(intakeUrl){
+  const status=classifyStatus(o);
+  const notify=['upcoming','previous','closed'].includes(status.tone);
+  const action=element('button',notify?'Notify Me ♡':'I’m Interested ♡','op-interest-button');
+  action.type='button';
+  action.addEventListener('click',()=>openInterest(o,notify?'notify':'interest'));
+  links.append(action);
+}
+// Buttons are intentionally hidden until the private intake endpoint is deployed and tested.
 card.append(links);results.append(card);
 }
 }
