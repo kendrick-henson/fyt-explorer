@@ -225,11 +225,18 @@ const searchable=o=>normalizeSearch([
 ].join(' '));
 const includesPhrase=(haystack,phrase)=>(' '+haystack+' ').includes(' '+phrase+' ');
 function interestMatch(o,query){
-  const words=normalizeSearch(query).split(' ').filter(Boolean);
+  const raw=normalizeSearch(query);
+  const words=raw.split(' ').filter(Boolean);
   if(!words.length)return {match:true,score:0};
   const haystack=searchable(o);
   const tags=normalizeSearch([...list(o.interestTags),...list(o.careerCommunities)].join(' '));
-  const raw=normalizeSearch(query);
+  // Support multi-word synonyms such as "registered nurse" and "health care".
+  const fullAlias=interestAliases.find(group=>group.some(term=>normalizeSearch(term)===raw));
+  if(fullAlias){
+    const exact=includesPhrase(haystack,raw);
+    const related=fullAlias.some(term=>includesPhrase(haystack,normalizeSearch(term)));
+    return {match:exact||related,score:exact?12:related?2:0};
+  }
   let score=includesPhrase(haystack,raw)?8:0;
   for(const word of words){
     if(includesPhrase(haystack,word)){score+=includesPhrase(tags,word)?5:3;continue;}
