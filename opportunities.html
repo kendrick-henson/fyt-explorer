@@ -32,19 +32,23 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 .op-more{align-self:flex-start;background:none;border:0;padding:0;color:#333;text-decoration:underline;text-underline-offset:3px;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
 .op-more:focus-visible{outline:3px solid #ef185d;outline-offset:3px}
 .op-item .op-meta{color:#5b5763;font-size:12px;display:grid;gap:4px}
-/* Scannable application status: labels and icons reinforce colors */
-.op-status{display:flex;align-items:flex-start;gap:11px;padding:13px 14px;border-radius:12px;border-left:4px solid;font-size:13px;line-height:1.35}
-.op-status-icon{display:grid;place-items:center;flex:0 0 22px;width:22px;height:22px;font-size:20px;font-weight:700;line-height:1}
-.op-status-copy{min-width:0;display:flex;flex-direction:column;gap:3px}
-.op-status-label{font-size:11px;letter-spacing:.07em;text-transform:uppercase;font-weight:800}
-.op-status-message{font-size:13px;font-weight:700;overflow-wrap:anywhere}
-.op-status.open-now{background:#e7f4eb;border-color:#27824e;color:#226b41}
-.op-status.year-round{background:#fcf0e9;border-color:#cf4918;color:#b03c14}
-.op-status.closing-soon{background:#fde6ee;border-color:#ee1261;color:#b70046}
-.op-status.upcoming{background:#f1ece4;border-color:#a99a84;color:#62594e}
-.op-status.closed{background:#f4ebed;border-color:#a45d6a;color:#813c49}
-.op-status.previous{background:#eeece9;border-color:#9b9188;color:#645c55}
-.op-status.check{background:#eef1f4;border-color:#6d8396;color:#485f71}
+/* Compact, colorful application status chips with optional full details. */
+.op-status{display:inline-flex;align-items:center;align-self:flex-start;gap:8px;max-width:100%;padding:7px 11px;border-radius:999px;border:1px solid transparent;font-size:12px;line-height:1.3}
+.op-status-icon{display:inline-flex;align-items:center;justify-content:center;flex:0 0 16px;width:16px;font-size:15px;font-weight:800}
+.op-status-copy{min-width:0;display:inline-flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px}
+.op-status-label{font-size:11px;letter-spacing:.035em;text-transform:uppercase;font-weight:800}
+.op-status-message{font-size:11px;font-weight:600}
+.op-status.open-now{background:#E4F6E9;border-color:#A7D8B7;color:#23683F}
+.op-status.year-round{background:#FFF0DE;border-color:#F1CC9E;color:#A34E13}
+.op-status.closing-soon{background:#FDE4EE;border-color:#F6ABC7;color:#B50950}
+.op-status.upcoming{background:#EEE8FC;border-color:#CEC0F0;color:#63459F}
+.op-status.closed{background:#FBE9EB;border-color:#E6BBC4;color:#A23751}
+.op-status.previous{background:#FFF4D9;border-color:#EAD4A2;color:#886118}
+.op-status.check{background:#EAF2FA;border-color:#BED3EB;color:#385D86}
+.op-status-details{font-size:12px;color:#5d5764;margin:-4px 0 2px}
+.op-status-details summary{display:inline-block;text-decoration:underline;text-underline-offset:3px;font-weight:700;cursor:pointer}
+.op-status-details summary:focus-visible{outline:3px solid #EF185D;outline-offset:3px}
+.op-status-details p{margin:7px 0 0;line-height:1.5;color:#58525e;font-size:13px}
 .op-interest-button{background:#333;color:white;border:0;border-radius:8px;cursor:pointer;font:inherit;font-size:13px;font-weight:700;padding:10px 12px}
 .op-interest-button:hover{background:#1e1e1e}
 .op-interest-button:focus-visible,.op-request-dialog button:focus-visible,.op-request-dialog input:focus-visible{outline:3px solid #ef185d;outline-offset:3px}
@@ -192,45 +196,43 @@ function classifyStatus(o){
   const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   const days=deadline?Math.round((deadline-today)/86400000):null;
   const status=String(o.applicationStatus||'').trim();
-  const message=update||'Check the organizer for current details.';
-  const result=(tone,icon,label,msg)=>({tone,icon,label,message:msg||message});
-  if(days!==null&&days<0){
-    return result('closed','×','Listed deadline passed',
-      'The listed '+deadlineText+' deadline has passed. Check the organizer for updates.');
-  }
+  const result=(tone,icon,label,hint='')=>({tone,icon,label,hint,details:update});
+  if(days!==null&&days<0)return result('closed','×','Deadline passed',deadlineText);
   if(status==='Closed')return result('closed','×','Applications closed');
-  if(status==='Previously Offered')return result('previous','◷','Previously offered · next cycle unconfirmed');
-  if(status==='Opening Later')return result('upcoming','▦','Opening later · check announced dates');
-  if(status==='Year-Round')return result('year-round','↻','Applications accepted year-round');
-  if(status==='Ongoing / Check Availability')
-    return result('check','↻','Ongoing program · check availability');
+  if(status==='Previously Offered')return result('previous','◷','Previously offered','Next cycle unconfirmed');
+  if(status==='Opening Later')return result('upcoming','▦','Opens later');
+  if(status==='Year-Round')return result('year-round','↻','Year-round');
+  if(status==='Ongoing / Check Availability')return result('check','↻','Ongoing','Check availability');
   if(status==='Open Now'){
     if(days!==null&&days<=15)return result('closing-soon','◷',
-      days===0?'Deadline today · applications listed open':
-      'Closes in '+days+' day'+(days===1?'':'s'));
-    return result('open-now','✓','Applications open');
+      days===0?'Deadline today':'Closes in '+days+' day'+(days===1?'':'s'));
+    return result('open-now','✓','Open now',deadlineText?'Due '+deadlineText:'');
   }
-  if(status==='Deadline Listed'){
-    const preface=days===null?'Deadline listed':days===0?'Deadline today':
-      days<=15?'Deadline in '+days+' day'+(days===1?'':'s'):'Deadline listed';
-    return result('check','▦',preface+' · opening not verified');
-  }
-  if(status==='Check Availability')return result('check','ⓘ','Check application availability');
-  // Older feeds might not yet include staff status. Never infer "open" from
-  // a future deadline or raw copy; use conservative labeling instead.
+  if(status==='Deadline Listed')return result('check','▦','Deadline listed',
+    deadlineText?'Due '+deadlineText:'Opening unverified');
+  if(status==='Check Availability')return result('check','ⓘ','Check availability');
   if(o.programCycle==='Previously Offered — Next Cycle Unconfirmed')
-    return result('previous','◷','Previously offered · dates unconfirmed');
-  return result('check','ⓘ','Check application availability');
+    return result('previous','◷','Previously offered','Dates unconfirmed');
+  return result('check','ⓘ','Check availability');
 }
 function statusBanner(o){
   const s=classifyStatus(o);
-  const box=element('div','','op-status '+s.tone);
+  const banner=element('div','','op-status '+s.tone);
   const icon=element('span',s.icon,'op-status-icon');
   icon.setAttribute('aria-hidden','true');
   const copy=element('div','','op-status-copy');
-  copy.append(element('span',s.label,'op-status-label'),element('span',s.message,'op-status-message'));
-  box.append(icon,copy);
-  return box;
+  copy.append(element('span',s.label,'op-status-label'));
+  if(s.hint)copy.append(element('span',s.hint,'op-status-message'));
+  banner.append(icon,copy);
+  const wrap=element('div','','op-status-wrap');
+  wrap.append(banner);
+  if(s.details){
+    const details=element('details','','op-status-details');
+    const summary=element('summary','Application details');
+    details.append(summary,element('p',s.details));
+    wrap.append(details);
+  }
+  return wrap;
 }
 
 /* Curated interest synonyms, deliberately narrow to avoid unrelated matches.
