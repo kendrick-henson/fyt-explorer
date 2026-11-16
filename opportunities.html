@@ -9,6 +9,7 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 .op-filters{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:12px;padding:20px;border:1px solid #e6dfeb;border-radius:16px;background:white;margin:28px 0}
 .op-filters label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;color:#333333}
 .op-filters input,.op-filters select{font:inherit;font-weight:normal;width:100%;padding:12px;border:1px solid #ccc5d7;border-radius:8px;min-height:45px;background:white}
+.op-search-tip{color:#645f66;font-size:13px;margin:-14px 0 15px;line-height:1.5}
 .op-count{display:flex;justify-content:space-between;align-items:center;gap:15px;margin:18px 0;flex-wrap:wrap;color:#696570;font-size:14px}
 .op-count button{color:#333333;text-decoration:underline;border:none;background:none;cursor:pointer;font-weight:700}
 .op-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
@@ -67,6 +68,7 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 <label for="grade">Your grade<select id="grade"><option value="">Any grade</option><option value="8">8th</option><option value="9">9th</option><option value="10">10th</option><option value="11">11th</option><option value="12">12th</option></select></label>
 <label for="cycle">Program cycle<select id="cycle"><option value="">Any cycle</option><option>2027 Confirmed</option><option>Ongoing / Recurring</option><option>Previously Offered — Next Cycle Unconfirmed</option></select></label>
 </div>
+<p class="op-search-tip">Tip: try a career or an interest—like doctor, photographer, robotics, or coding. Related terms can find relevant programs.</p>
 <div class="op-count"><span id="count" aria-live="polite">Loading opportunities…</span><button id="reset" type="button">Clear filters</button></div>
 <div class="op-grid" id="results"></div>
 <dialog id="interest-dialog" class="op-request-dialog" aria-labelledby="request-title">
@@ -197,13 +199,59 @@ function statusBanner(o){
   return box;
 }
 
+/* Curated interest synonyms, deliberately narrow to avoid unrelated matches.
+   Normalized words and phrases link language Fellows use to published tags. */
+const interestAliases=[
+  ['nurse','nurses','nursing','rn','registered nurse'],
+  ['doctor','doctors','physician','physicians','medicine','medical','healthcare','health care'],
+  ['coding','code','programming','programmer','software developer','software engineering'],
+  ['robot','robots','robotics','engineering','engineer','engineers'],
+  ['lawyer','lawyers','attorney','attorneys','law','legal'],
+  ['photography','photographer','photos','photo'],
+  ['journalism','journalist','reporting','reporter','news writing'],
+  ['music','musician','musicians','band','orchestra','instrumental music'],
+  ['acting','actor','actors','theater','theatre','drama'],
+  ['animal','animals','wildlife','zoology','zoo'],
+  ['volunteer','volunteers','volunteering','community service'],
+  ['college','university','college readiness','college prep'],
+  ['entrepreneur','entrepreneurship','starting a business','startup','startups'],
+  ['government','civic engagement','public policy','politics']
+];
+const normalizeSearch=s=>String(s||'').toLowerCase().normalize('NFKD')
+  .replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');
+const searchable=o=>normalizeSearch([
+  o.name,o.organization,o.type,o.description,o.fellowUpdate,o.commitment,
+  o.location,...list(o.careerCommunities),...list(o.interestTags)
+].join(' '));
+const includesPhrase=(haystack,phrase)=>(' '+haystack+' ').includes(' '+phrase+' ');
+function interestMatch(o,query){
+  const words=normalizeSearch(query).split(' ').filter(Boolean);
+  if(!words.length)return {match:true,score:0};
+  const haystack=searchable(o);
+  const tags=normalizeSearch([...list(o.interestTags),...list(o.careerCommunities)].join(' '));
+  const raw=normalizeSearch(query);
+  let score=includesPhrase(haystack,raw)?8:0;
+  for(const word of words){
+    if(includesPhrase(haystack,word)){score+=includesPhrase(tags,word)?5:3;continue;}
+    const family=interestAliases.find(group=>group.some(term=>normalizeSearch(term)===word));
+    if(!family)return {match:false,score:0};
+    const related=family.some(term=>includesPhrase(haystack,normalizeSearch(term)));
+    if(!related)return {match:false,score:0};
+    score+=1;
+  }
+  return {match:true,score};
+}
+
 function render(){
 if(!opportunities)return;
 const q=byId('q').value.trim().toLowerCase(),c=byId('community').value,g=byId('grade').value,cycle=byId('cycle').value;
-const matches=opportunities.filter(o=>(!c||list(o.careerCommunities).includes(c))&&(!g||list(o.eligibleGrades).includes(g))&&(!cycle||o.programCycle===cycle)&&(!q||[o.name,o.organization,o.type,o.description,o.fellowUpdate,o.commitment,o.location,...list(o.careerCommunities),...list(o.interestTags)].join(' ').toLowerCase().includes(q)));
+const matches=opportunities.map((o,index)=>({o,index,relevance:interestMatch(o,q)}))
+  .filter(x=>(!c||list(x.o.careerCommunities).includes(c))&&
+    (!g||list(x.o.eligibleGrades).includes(g))&&(!cycle||x.o.programCycle===cycle)&&x.relevance.match)
+  .sort((a,b)=>b.relevance.score-a.relevance.score||a.index-b.index).map(x=>x.o);
 byId('count').textContent='Showing '+matches.length+' of '+opportunities.length+' approved opportunities';
 const results=byId('results');results.replaceChildren();
-if(!matches.length){results.append(element('div','Nothing matches these filters. Try another community or clear the search.','op-notice'));return;}
+if(!matches.length){results.append(element('div','No matches yet. Try a related interest (such as healthcare for medicine, coding for programming, or law for lawyer), or clear your filters.','op-notice'));return;}
 for(const o of matches){
 const card=element('article','','op-item');
 card.append(element('p',o.organization,'op-org'),element('h2',o.name),statusBanner(o));
