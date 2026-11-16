@@ -32,8 +32,18 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 .op-more{align-self:flex-start;background:none;border:0;padding:0;color:#333;text-decoration:underline;text-underline-offset:3px;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
 .op-more:focus-visible{outline:3px solid #ef185d;outline-offset:3px}
 .op-item .op-meta{color:#5b5763;font-size:12px;display:grid;gap:4px}
-/* Compact, colorful application status chips with optional full details. */
-.op-status{display:inline-flex;align-items:center;align-self:flex-start;gap:8px;max-width:100%;padding:7px 11px;border-radius:999px;border:1px solid transparent;font-size:12px;line-height:1.3}
+/* Clickable colored status pill; the expanded explanation lives inside it. */
+.op-status-wrap{min-width:0}
+.op-status-details{min-width:0}
+.op-status{display:inline-flex;align-items:center;gap:8px;max-width:100%;padding:8px 11px;border-radius:999px;border:1px solid transparent;font-size:12px;line-height:1.3}
+.op-status-details summary{list-style:none;cursor:pointer;user-select:none}
+.op-status-details summary::-webkit-details-marker{display:none}
+.op-status-details summary::marker{content:''}
+.op-status-details summary:focus-visible{outline:3px solid #EF185D;outline-offset:3px}
+.op-status-details summary:hover{filter:brightness(.97)}
+.op-status-details summary .op-status-chevron{display:inline-block;margin-left:3px;font-size:14px;line-height:1;transition:transform .2s ease;flex-shrink:0}
+.op-status-details[open] summary .op-status-chevron{transform:rotate(180deg)}
+.op-status-details[open] summary{border-radius:14px}
 .op-status-icon{display:inline-flex;align-items:center;justify-content:center;flex:0 0 16px;width:16px;font-size:15px;font-weight:800}
 .op-status-copy{min-width:0;display:inline-flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px}
 .op-status-label{font-size:11px;letter-spacing:.035em;text-transform:uppercase;font-weight:800}
@@ -45,10 +55,8 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 .op-status.closed{background:#FBE9EB;border-color:#E6BBC4;color:#A23751}
 .op-status.previous{background:#FFF4D9;border-color:#EAD4A2;color:#886118}
 .op-status.check{background:#EAF2FA;border-color:#BED3EB;color:#385D86}
-.op-status-details{font-size:12px;color:#5d5764;margin:-4px 0 2px}
-.op-status-details summary{display:inline-block;text-decoration:underline;text-underline-offset:3px;font-weight:700;cursor:pointer}
-.op-status-details summary:focus-visible{outline:3px solid #EF185D;outline-offset:3px}
-.op-status-details p{margin:7px 0 0;line-height:1.5;color:#58525e;font-size:13px}
+.op-status-details-content{font-size:13px;line-height:1.5;color:#58525e;padding:12px 14px;margin-top:8px;background:#F7F5F9;border:1px solid #E8E1ED;border-radius:10px}
+.op-status-details-content p{margin:0}
 .op-interest-button{background:#333;color:white;border:0;border-radius:8px;cursor:pointer;font:inherit;font-size:13px;font-weight:700;padding:10px 12px}
 .op-interest-button:hover{background:#1e1e1e}
 .op-interest-button:focus-visible,.op-request-dialog button:focus-visible,.op-request-dialog input:focus-visible{outline:3px solid #ef185d;outline-offset:3px}
@@ -217,22 +225,21 @@ function classifyStatus(o){
 }
 function statusBanner(o){
   const s=classifyStatus(o);
-  const banner=element('div','','op-status '+s.tone);
+  const details=element('details','','op-status-details');
+  const banner=element('summary','','op-status '+s.tone);
   const icon=element('span',s.icon,'op-status-icon');
   icon.setAttribute('aria-hidden','true');
-  const copy=element('div','','op-status-copy');
+  const copy=element('span','','op-status-copy');
   copy.append(element('span',s.label,'op-status-label'));
   if(s.hint)copy.append(element('span',s.hint,'op-status-message'));
-  banner.append(icon,copy);
-  const wrap=element('div','','op-status-wrap');
-  wrap.append(banner);
-  if(s.details){
-    const details=element('details','','op-status-details');
-    const summary=element('summary','Application details');
-    details.append(summary,element('p',s.details));
-    wrap.append(details);
-  }
-  return wrap;
+  const chevron=element('span','⌄','op-status-chevron');
+  chevron.setAttribute('aria-hidden','true');
+  banner.append(icon,copy,chevron);
+  banner.setAttribute('aria-label',s.label+(s.hint?' — '+s.hint:'')+'. Show application details');
+  const description=element('div','','op-status-details-content');
+  description.append(element('p',s.details||'Check the organizer’s website for current application information.'));
+  details.append(banner,description);
+  return details;
 }
 
 /* Curated interest synonyms, deliberately narrow to avoid unrelated matches.
