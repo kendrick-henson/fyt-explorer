@@ -17,7 +17,12 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 .op-item h2{font-size:20px;color:#282536;margin:0;overflow-wrap:anywhere}.op-org{color:#696570;font-size:13px;margin:0}
 .op-tags{display:flex;gap:5px;flex-wrap:wrap}.op-tags span{background:#ede7f8;color:#333333;font-size:11px;border-radius:40px;padding:4px 8px;font-weight:700}
 .op-tags span.past{background:#f7ead7;color:#704d24}
-.op-item p{margin:0;font-size:14px}.op-item .op-meta{color:#5b5763;font-size:12px;display:grid;gap:4px}
+.op-item p{margin:0;font-size:14px}
+.op-description{line-height:1.55;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden}
+.op-description.expanded{display:block;overflow:visible}
+.op-more{align-self:flex-start;background:none;border:0;padding:0;color:#333;text-decoration:underline;text-underline-offset:3px;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.op-more:focus-visible{outline:3px solid #ef185d;outline-offset:3px}
+.op-item .op-meta{color:#5b5763;font-size:12px;display:grid;gap:4px}
 /* Scannable application status: labels and icons reinforce colors */
 .op-status{display:flex;align-items:flex-start;gap:11px;padding:13px 14px;border-radius:12px;border-left:4px solid;font-size:13px;line-height:1.35}
 .op-status-icon{display:grid;place-items:center;flex:0 0 22px;width:22px;height:22px;font-size:20px;font-weight:700;line-height:1}
@@ -265,7 +270,22 @@ card.append(element('p',o.organization,'op-org'),element('h2',o.name),statusBann
 const tags=element('div','','op-tags');for(const t of list(o.careerCommunities))tags.append(element('span',t));
 const cycleText=o.programCycle==='Previously Offered — Next Cycle Unconfirmed'?'Previously offered':o.programCycle;
 const ct=element('span',cycleText);if(o.programCycle==='Previously Offered — Next Cycle Unconfirmed')ct.className='past';tags.append(ct);card.append(tags);
-card.append(element('p',o.description));
+const desc=element('p',o.description,'op-description');
+card.append(desc);
+if(String(o.description||'').length>165){
+  const more=element('button','Read more','op-more');
+  more.type='button';
+  more.setAttribute('aria-expanded','false');
+  const descId='op-desc-'+String(o.id).replace(/[^a-zA-Z0-9-]/g,'');
+  desc.id=descId;
+  more.setAttribute('aria-controls',descId);
+  more.addEventListener('click',()=>{
+    const expanded=desc.classList.toggle('expanded');
+    more.textContent=expanded?'Show less':'Read more';
+    more.setAttribute('aria-expanded',String(expanded));
+  });
+  card.append(more);
+}
 const meta=element('div','','op-meta');meta.append(element('span','Grades: '+list(o.eligibleGrades).join(', ')));if(o.type)meta.append(element('span','Type: '+o.type));if(o.cost)meta.append(element('span','Cost/pay: '+o.cost));card.append(meta);
 // Fellow-facing update appears once inside the status banner near the card title.
 const links=element('div','','op-links');
