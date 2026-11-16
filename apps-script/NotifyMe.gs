@@ -22,9 +22,9 @@ function doPost(e) {
     const first = clean_(p.firstName, 40);
     const last = clean_(p.lastName, 50);
     const id = clean_(p.opportunityId, 16);
-    if (!/^[\\p{L}\\p{M} .'-]{1,40}$/u.test(first) ||
-        !/^[\\p{L}\\p{M} .'-]{1,50}$/u.test(last)) throw Error('Name required');
-    if (!/^FYT-\\d{5}$/.test(id)) throw Error('Invalid opportunity');
+    if (!/^[\p{L}\p{M} .'-]{1,40}$/u.test(first) ||
+        !/^[\p{L}\p{M} .'-]{1,50}$/u.test(last)) throw Error('Name required');
+    if (!/^FYT-\d{5}$/.test(id)) throw Error('Invalid opportunity');
     const props = PropertiesService.getScriptProperties();
     const sourceId = props.getProperty('FYT_OPPORTUNITIES_ID');
     const trackerId = props.getProperty('FYT_TRACKER_ID');
@@ -53,7 +53,7 @@ function doPost(e) {
       if (!cache.get(key)) {
         const now = new Date();
         // Sanitize before writing to Sheets (formula injection).
-        const safeCell = x => /^[=+@\\-]/.test(x) ? "'" + x : x;
+        const safeCell = x => /^[=+@\-]/.test(x) ? "'" + x : x;
         sheet.appendRow([
           Utilities.getUuid(), now, safeCell(first), safeCell(last), '',
           id, matching[nameCol], 'Interested / Notify Me', 'New', '', now
@@ -70,7 +70,7 @@ function doPost(e) {
   }
 }
 function clean_(value, limit) {
-  return String(value || '').trim().replace(/\\s+/g,' ').slice(0,limit);
+  return String(value || '').trim().replace(/\s+/g,' ').slice(0,limit);
 }
 function reply_(message, success) {
   const color=success?'#267243':'#AB3050';
