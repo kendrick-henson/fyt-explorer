@@ -12,6 +12,15 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 .op-search-tip{color:#645f66;font-size:13px;margin:-14px 0 15px;line-height:1.5}
 .op-count{display:flex;justify-content:space-between;align-items:center;gap:15px;margin:18px 0;flex-wrap:wrap;color:#696570;font-size:14px}
 .op-count button{color:#333333;text-decoration:underline;border:none;background:none;cursor:pointer;font-weight:700}
+.op-count-actions{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.op-saved-only{display:flex;gap:7px;align-items:center;cursor:pointer;font-size:13px;font-weight:700;color:#333}
+.op-saved-only input{accent-color:#ef185d;width:17px;height:17px}
+.op-device-note{font-size:12px;color:#706971;margin:-10px 0 20px}
+.op-save-button{background:white;color:#333;border:1px solid #c8bfcb;border-radius:8px;font:inherit;font-size:13px;font-weight:700;padding:10px 12px;cursor:pointer}
+.op-save-button.is-saved{background:#fce1e9;color:#aa1550;border-color:#f4b4cb}
+.op-save-button:hover{border-color:#ef185d}
+.op-save-button:focus-visible{outline:3px solid #ef185d;outline-offset:3px}
+
 .op-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
 .op-item{border:1px solid #e6dfeb;background:white;border-radius:15px;padding:22px;display:flex;flex-direction:column;gap:11px;min-width:0}
 .op-item h2{font-size:20px;color:#282536;margin:0;overflow-wrap:anywhere}.op-org{color:#696570;font-size:13px;margin:0}
@@ -74,7 +83,8 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 <label for="cycle">Program cycle<select id="cycle"><option value="">Any cycle</option><option>2027 Confirmed</option><option>Ongoing / Recurring</option><option>Previously Offered — Next Cycle Unconfirmed</option></select></label>
 </div>
 <p class="op-search-tip">Tip: try a career or an interest—like doctor, photographer, robotics, or coding. Related terms can find relevant programs.</p>
-<div class="op-count"><span id="count" aria-live="polite">Loading opportunities…</span><button id="reset" type="button">Clear filters</button></div>
+<div class="op-count"><span id="count" aria-live="polite">Loading opportunities…</span><div class="op-count-actions"><label class="op-saved-only"><input id="saved-only" type="checkbox"> Saved only <span id="saved-total">(0)</span></label><button id="reset" type="button">Clear filters</button></div></div>
+<p class="op-device-note" id="device-note">♡ Saved opportunities stay on this device and browser. This is not a BRYC account or application tracker.</p>
 <div class="op-grid" id="results"></div>
 <dialog id="interest-dialog" class="op-request-dialog" aria-labelledby="request-title">
   <div class="op-request-dialog-content">
@@ -112,6 +122,25 @@ if(approved.includes(fromUrl))byId('community').value=fromUrl;
 const incomingQuery=params.get('q');
 if(incomingQuery)byId('q').value=incomingQuery.slice(0,200);
 let opportunities=null;
+const savedKey='bryc-fyt-saved-opportunities-v1';
+const idPattern=/^FYT-\d{5}$/;
+let savedIds=new Set();
+let savingAvailable=true;
+try{
+  const parsed=JSON.parse(localStorage.getItem(savedKey)||'[]');
+  if(Array.isArray(parsed))savedIds=new Set(parsed.filter(id=>typeof id==='string'&&idPattern.test(id)).slice(0,200));
+}catch(err){savingAvailable=false}
+function persistSaved(){
+  if(!savingAvailable)return;
+  try{localStorage.setItem(savedKey,JSON.stringify([...savedIds]));}
+  catch(err){savingAvailable=false;byId('device-note').textContent='Saving is unavailable in this browser. Try enabling local storage.'}
+}
+function toggleSaved(id){
+  if(!savingAvailable||!idPattern.test(String(id)))return;
+  if(savedIds.has(id))savedIds.delete(id);else savedIds.add(id);
+  persistSaved();render();
+}
+
 const snapshotStatusById=new Map((window.FYT_STATIC_PAYLOAD?.opportunities||[]).map(o=>[o.id,o.applicationStatus]));
 const element=(tag,content,cls)=>{const el=document.createElement(tag);el.textContent=String(content||'');if(cls)el.className=cls;return el};
 const list=x=>Array.isArray(x)?x:[];
@@ -257,13 +286,15 @@ function interestMatch(o,query){
 function render(){
 if(!opportunities)return;
 const q=byId('q').value.trim().toLowerCase(),c=byId('community').value,g=byId('grade').value,cycle=byId('cycle').value;
+const savedOnly=byId('saved-only').checked;
+byId('saved-total').textContent='('+savedIds.size+')';
 const matches=opportunities.map((o,index)=>({o,index,relevance:interestMatch(o,q)}))
   .filter(x=>(!c||list(x.o.careerCommunities).includes(c))&&
-    (!g||list(x.o.eligibleGrades).includes(g))&&(!cycle||x.o.programCycle===cycle)&&x.relevance.match)
+    (!g||list(x.o.eligibleGrades).includes(g))&&(!cycle||x.o.programCycle===cycle)&&(!savedOnly||savedIds.has(x.o.id))&&x.relevance.match)
   .sort((a,b)=>b.relevance.score-a.relevance.score||a.index-b.index).map(x=>x.o);
 byId('count').textContent='Showing '+matches.length+' of '+opportunities.length+' approved opportunities';
 const results=byId('results');results.replaceChildren();
-if(!matches.length){results.append(element('div','No matches yet. Try a related interest (such as healthcare for medicine, coding for programming, or law for lawyer), or clear your filters.','op-notice'));return;}
+if(!matches.length){results.append(element('div','No matches with these filters. Try another interest, clear your filters, or turn off Saved only.','op-notice'));return;}
 for(const o of matches){
 const card=element('article','','op-item');
 card.append(element('p',o.organization,'op-org'),element('h2',o.name),statusBanner(o));
@@ -289,6 +320,13 @@ if(String(o.description||'').length>165){
 const meta=element('div','','op-meta');meta.append(element('span','Grades: '+list(o.eligibleGrades).join(', ')));if(o.type)meta.append(element('span','Type: '+o.type));if(o.cost)meta.append(element('span','Cost/pay: '+o.cost));card.append(meta);
 // Fellow-facing update appears once inside the status banner near the card title.
 const links=element('div','','op-links');
+const bookmark=element('button',savedIds.has(o.id)?'♥ Saved':'♡ Save for later','op-save-button'+(savedIds.has(o.id)?' is-saved':''));
+bookmark.type='button';
+bookmark.setAttribute('aria-pressed',String(savedIds.has(o.id)));
+bookmark.setAttribute('aria-label',(savedIds.has(o.id)?'Remove saved opportunity: ':'Save opportunity: ')+o.name);
+bookmark.disabled=!savingAvailable;
+bookmark.addEventListener('click',()=>toggleSaved(o.id));
+links.append(bookmark);
 const url=safeUrl(o.url);if(url){const a=element('a','Explore program ↗');a.href=url;a.target='_blank';a.rel='noopener noreferrer';links.append(a)}
 const updates=safeUrl(o.organizerNotificationUrl);if(updates){const a=element('a','Organizer updates ↗','alt');a.href=updates;a.target='_blank';a.rel='noopener noreferrer';links.append(a)}
 if(intakeUrl){
@@ -305,7 +343,8 @@ card.append(links);results.append(card);
 }
 function error(message){byId('count').textContent='Feed unavailable';byId('results').replaceChildren();byId('error').hidden=false;byId('error-detail').textContent=message}
 for(const id of ['q','community','grade','cycle'])byId(id).addEventListener(id==='q'?'input':'change',render);
-byId('reset').addEventListener('click',()=>{for(const id of ['q','community','grade','cycle'])byId(id).value='';history.replaceState(null,'',location.pathname);render()});
+byId('saved-only').addEventListener('change',render);
+byId('reset').addEventListener('click',()=>{for(const id of ['q','community','grade','cycle'])byId(id).value='';byId('saved-only').checked=false;history.replaceState(null,'',location.pathname);render()});
 let received=false;
 window.FYTFeedReceiver=payload=>{
   if(!payload||payload.ok!==true||!Array.isArray(payload.opportunities)){
