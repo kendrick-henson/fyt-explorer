@@ -73,7 +73,7 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 .op-request-buttons button{font:inherit;font-weight:700;border-radius:9px;padding:11px 17px;border:0;cursor:pointer}
 .op-request-buttons button[type=submit]{background:#ef185d;color:white}
 .op-request-buttons button[type=button]{background:#eee;color:#333}
-.op-links{display:flex;gap:9px;flex-wrap:wrap;margin-top:auto}.op-links a{background:#ef185d;color:white;border-radius:8px;text-decoration:none;padding:10px 12px;font-weight:700;font-size:13px}.op-links a:hover{background:#c6124d}.op-links a.alt{background:#efeaf7;color:#333333}.op-links a.alt:hover{background:#e1d8f1}
+.op-links{display:flex;gap:9px;flex-wrap:wrap;margin-top:auto}.op-links a{background:#ef185d;color:white;border-radius:8px;text-decoration:none;padding:10px 12px;font-weight:700;font-size:13px}.op-links a:hover{background:#c6124d}
 .op-notice{background:white;border:1px solid #e6dfeb;border-radius:14px;padding:28px;max-width:750px}
 .op-home{display:inline-block;color:#333333;text-decoration:underline;margin-top:12px}
 @media(max-width:950px){.op-grid{grid-template-columns:repeat(2,1fr)}.op-filters{grid-template-columns:1fr 1fr}}
@@ -337,7 +337,7 @@ bookmark.disabled=!savingAvailable;
 bookmark.addEventListener('click',()=>toggleSaved(o.id));
 links.append(bookmark);
 const url=safeUrl(o.url);if(url){const a=element('a','Explore program ↗');a.href=url;a.target='_blank';a.rel='noopener noreferrer';links.append(a)}
-const updates=safeUrl(o.organizerNotificationUrl);if(updates){const a=element('a','Organizer updates ↗','alt');a.href=updates;a.target='_blank';a.rel='noopener noreferrer';links.append(a)}
+
 if(intakeUrl){
   const status=classifyStatus(o);
   const notify=['upcoming','previous','closed'].includes(status.tone);
