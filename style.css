@@ -145,12 +145,12 @@ h2 { font-size: clamp(28px, 4vw, 40px); margin: 12px 0; }
 }
 .hero-search input::placeholder { color: #797282; opacity: 1; }
 .hero-search button {
-  border: 0; background: var(--purple); color: white;
+  border: 0; background: #ef185d; color: white;
   font: inherit; font-weight: 700; font-size: 14px;
   padding: 14px 18px; min-height: 44px; border-radius: 9px;
   white-space: nowrap; cursor: pointer;
 }
-.hero-search button:hover { background: #29216c; }
+.hero-search button:hover { background: #c6124d; }
 .hero-search button:focus-visible { outline: 3px solid var(--pink); outline-offset: 3px; }
 .hero-search-hint { margin: 12px 0 12px; color: #6a6470; font-size: 13px; }
 .hero-search-hint a { color: var(--charcoal); font-weight: 600; text-underline-offset: 3px; }
