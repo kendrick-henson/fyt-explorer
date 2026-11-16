@@ -17,7 +17,19 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 .op-tags{display:flex;gap:5px;flex-wrap:wrap}.op-tags span{background:#ede7f8;color:#333333;font-size:11px;border-radius:40px;padding:4px 8px;font-weight:700}
 .op-tags span.past{background:#f7ead7;color:#704d24}
 .op-item p{margin:0;font-size:14px}.op-item .op-meta{color:#5b5763;font-size:12px;display:grid;gap:4px}
-.op-update{background:#f5f1fc;padding:12px;border-left:4px solid #3a3088;border-radius:4px 8px 8px 4px;font-size:13px}
+/* Scannable application status: labels and icons reinforce colors */
+.op-status{display:flex;align-items:flex-start;gap:11px;padding:13px 14px;border-radius:12px;border-left:4px solid;font-size:13px;line-height:1.35}
+.op-status-icon{display:grid;place-items:center;flex:0 0 22px;width:22px;height:22px;font-size:20px;font-weight:700;line-height:1}
+.op-status-copy{min-width:0;display:flex;flex-direction:column;gap:3px}
+.op-status-label{font-size:11px;letter-spacing:.07em;text-transform:uppercase;font-weight:800}
+.op-status-message{font-size:13px;font-weight:700;overflow-wrap:anywhere}
+.op-status.open-now{background:#e7f4eb;border-color:#27824e;color:#226b41}
+.op-status.year-round{background:#fcf0e9;border-color:#cf4918;color:#b03c14}
+.op-status.closing-soon{background:#fde6ee;border-color:#ee1261;color:#b70046}
+.op-status.upcoming{background:#f1ece4;border-color:#a99a84;color:#62594e}
+.op-status.closed{background:#f4ebed;border-color:#a45d6a;color:#813c49}
+.op-status.previous{background:#eeece9;border-color:#9b9188;color:#645c55}
+.op-status.check{background:#eef1f4;border-color:#6d8396;color:#485f71}
 .op-links{display:flex;gap:9px;flex-wrap:wrap;margin-top:auto}.op-links a{background:#3a3088;color:white;border-radius:8px;text-decoration:none;padding:10px 12px;font-weight:700;font-size:13px}.op-links a.alt{background:#efeaf7;color:#333333}
 .op-notice{background:white;border:1px solid #e6dfeb;border-radius:14px;padding:28px;max-width:750px}
 .op-home{display:inline-block;color:#333333;text-decoration:underline;margin-top:12px}
@@ -58,6 +70,62 @@ let opportunities=null;
 const element=(tag,content,cls)=>{const el=document.createElement(tag);el.textContent=String(content||'');if(cls)el.className=cls;return el};
 const list=x=>Array.isArray(x)?x:[];
 const safeUrl=x=>{try{const u=new URL(x);return u.protocol==='https:'?u.href:null}catch{return null}};
+
+/* Date-aware labels are conservative: a future deadline alone does not prove
+   that registration is open. All messaging is based on the public FYT feed. */
+const parseDeadline=value=>{
+  const str=String(value||'').trim();
+  if(!str)return null;
+  const match=str.match(/^(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+(\d{1,2}),?\s+(\d{4})$/i);
+  if(!match)return null;
+  const months=['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+  const month=months.indexOf(match[1].toLowerCase().slice(0,3));
+  const day=Number(match[2]),year=Number(match[3]);
+  const date=new Date(year,month,day);
+  if(date.getFullYear()!==year||date.getMonth()!==month||date.getDate()!==day)return null;
+  return date;
+};
+function classifyStatus(o){
+  const update=String(o.fellowUpdate||'').trim();
+  const lower=update.toLowerCase();
+  const cycle=String(o.programCycle||'');
+  const deadlineRaw=String(o.applicationDeadline||'').trim();
+  const deadline=parseDeadline(deadlineRaw);
+  const now=new Date();
+  const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const daysLeft=deadline?Math.round((deadline-today)/86400000):null;
+  const closedWords=/\b(closed|has passed|period has passed|deadline passed|no longer accepting)\b/i;
+  const opensLater=/\b(expected to open|will open|opens? in |opens? on |not been announced|not yet announced|check back|next application window|next recruitment|next enrollment|next-season|next season|next cycle|auditions take place by season)\b/i;
+  const yearRound=/\b(year.round|throughout the year|anytime|any time|accepts applications throughout|applications accepted throughout|open year.round)\b/i;
+  const openCurrent=/\b(open now|apply now|register now|registration is open|applications are open|currently accepting|currently enrolling)\b/i;
+  const pastCycle=cycle==='Previously Offered — Next Cycle Unconfirmed';
+  const message=update|| (deadlineRaw?'Listed deadline: '+deadlineRaw:'Visit the organizer for current details');
+  const result=(tone,icon,label,msg)=>({tone,icon,label,message:msg||message});
+  if(daysLeft!==null&&daysLeft<0)return result('closed','×','Listed deadline passed',
+    'Listed deadline: '+deadlineRaw+'. Check the organizer for the next opportunity.');
+  if(closedWords.test(lower))return result('closed','×','Applications closed');
+  if(pastCycle)return result('previous','◷','Previous offering · dates unconfirmed');
+  if(opensLater.test(lower))return result('upcoming','▦','Not open yet / next dates pending');
+  if(yearRound.test(lower)&&/\b(applications?|enroll(?:ment)?|volunteer|course|shifts?)\b/i.test(lower))
+    return result('year-round','↻','Open year-round / ongoing');
+  if(daysLeft!==null&&daysLeft>=0&&daysLeft<=15)return result('closing-soon','◷',
+    'Deadline in '+(daysLeft===0?'0 days':daysLeft+' day'+(daysLeft===1?'':'s'))+' · verify availability');
+  if(openCurrent.test(lower))return result('open-now','✓','Open now');
+  if(daysLeft!==null&&daysLeft>15)return result('check','▦','Upcoming deadline · check availability');
+  if(cycle==='Ongoing / Recurring')return result('check','↻','Recurring · check availability');
+  return result('check','ⓘ','Check dates / availability');
+}
+function statusBanner(o){
+  const s=classifyStatus(o);
+  const box=element('div','','op-status '+s.tone);
+  const icon=element('span',s.icon,'op-status-icon');
+  icon.setAttribute('aria-hidden','true');
+  const copy=element('div','','op-status-copy');
+  copy.append(element('span',s.label,'op-status-label'),element('span',s.message,'op-status-message'));
+  box.append(icon,copy);
+  return box;
+}
+
 function render(){
 if(!opportunities)return;
 const q=byId('q').value.trim().toLowerCase(),c=byId('community').value,g=byId('grade').value,cycle=byId('cycle').value;
@@ -67,13 +135,13 @@ const results=byId('results');results.replaceChildren();
 if(!matches.length){results.append(element('div','Nothing matches these filters. Try another community or clear the search.','op-notice'));return;}
 for(const o of matches){
 const card=element('article','','op-item');
-card.append(element('p',o.organization,'op-org'),element('h2',o.name));
+card.append(element('p',o.organization,'op-org'),element('h2',o.name),statusBanner(o));
 const tags=element('div','','op-tags');for(const t of list(o.careerCommunities))tags.append(element('span',t));
 const cycleText=o.programCycle==='Previously Offered — Next Cycle Unconfirmed'?'Previously offered':o.programCycle;
 const ct=element('span',cycleText);if(o.programCycle==='Previously Offered — Next Cycle Unconfirmed')ct.className='past';tags.append(ct);card.append(tags);
 card.append(element('p',o.description));
 const meta=element('div','','op-meta');meta.append(element('span','Grades: '+list(o.eligibleGrades).join(', ')));if(o.type)meta.append(element('span','Type: '+o.type));if(o.cost)meta.append(element('span','Cost/pay: '+o.cost));card.append(meta);
-if(o.fellowUpdate)card.append(element('div',o.fellowUpdate,'op-update'));
+// Fellow-facing update appears once inside the status banner near the card title.
 const links=element('div','','op-links');
 const url=safeUrl(o.url);if(url){const a=element('a','Explore program ↗');a.href=url;a.target='_blank';a.rel='noopener noreferrer';links.append(a)}
 const updates=safeUrl(o.organizerNotificationUrl);if(updates){const a=element('a','Organizer updates ↗','alt');a.href=updates;a.target='_blank';a.rel='noopener noreferrer';links.append(a)}
