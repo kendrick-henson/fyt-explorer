@@ -95,7 +95,7 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 </main>
 <footer><div class="container">BRYC | Find Your Thing<br><small>Opportunity details may change. Always check the organizer's website before applying.</small></div></footer>
 <script src="opportunities-snapshot.js?v=20261116-nursing"></script>
-<script src="fyt-config.js"></script>
+<script src="fyt-config.js?v=interest-test-1"></script>
 <script>
 (()=>{
 "use strict";
@@ -110,7 +110,10 @@ const list=x=>Array.isArray(x)?x:[];
 const safeUrl=x=>{try{const u=new URL(x);return u.protocol==='https:'?u.href:null}catch{return null}};
 // The private Fellow intake form is only shown after BRYC deploys and configures
 // a separate Apps Script intake endpoint. No public names or sheet data are stored here.
-const intakeUrl=safeUrl(window.FYT_CONFIG?.interestIntakeUrl);
+const intakeConfigured=safeUrl(window.FYT_CONFIG?.interestIntakeUrl);
+const intakeTestMode=new URLSearchParams(location.search).get('intakeTest')==='1';
+const intakeUrl=(window.FYT_CONFIG?.interestIntakeEnabled===true || intakeTestMode)
+  ? intakeConfigured : null;
 const interestDialog=byId('interest-dialog');
 const interestForm=byId('interest-form');
 function openInterest(o,mode){
