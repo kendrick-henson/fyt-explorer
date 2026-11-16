@@ -1,12 +1,12 @@
 # BRYC Find Your Thing — Interest Request Deployment
 
-## Status (Nov 16, 2026)
+## Status (Nov 16, 2026 — LIVE)
 - [x] Separate staff-only Google Sheet prepared: **BRYC FYT — Private Fellow Interest Requests (PY27)**.
 - [x] Private Google Apps Script intake code prepared in `apps-script/NotifyMe.gs`.
 - [x] Opportunity cards have an **I'm Interested / Notify Me** form, gated and hidden until the backend URL is configured.
-- [ ] BRYC staff must deploy a **separate** Google Apps Script web app and confirm appropriate youth-data access controls.
-- [ ] Test a non-student submission and verify the private request row.
-- [ ] Only then add the /exec link to `fyt-config.js` -> `interestIntakeUrl`.
+- [x] BRYC deployed the **separate** Google Apps Script web app. Staff should continue auditing youth-data access permissions.
+- [x] A fictitious Fellow request was submitted and the user confirmed that it appeared in the private request tracker.
+- [x] The deployed /exec URL is configured in `fyt-config.js` and `interestIntakeEnabled` is true for all visitors.
 
 ## Deployment (BRYC staff account)
 1. Confirm the new tracker workbook is **Restricted** and shared only with authorized BRYC staff. It must not be published to the web.
