@@ -23,7 +23,7 @@ function doGet() {
       deadline:key('Application Deadline'), commitment:key('Program Dates / Commitment'),
       cost:key('Cost / Pay'), format:key('Format'), location:key('Location'),
       update:key('Fellow-Facing Update'), cycle:key('Program Cycle'),
-      organizer:key('Organizer Notification Link')
+      organizer:key('Organizer Notification Link'), applicationStatus:key('FYT Application Status')
     };
     const list = value => String(value || '').split(',').map(v => v.trim()).filter(Boolean);
     const url = value => /^https:\/\//i.test(String(value||'')) ? String(value) : '';
@@ -36,6 +36,7 @@ function doGet() {
       applicationDeadline:r[fields.deadline],commitment:r[fields.commitment],
       cost:r[fields.cost],format:r[fields.format],location:r[fields.location],
       fellowUpdate:r[fields.update],programCycle:r[fields.cycle],
+      applicationStatus:r[fields.applicationStatus],
       organizerNotificationUrl:url(r[fields.organizer])
     }));
     return jsonp_({ok:true,version:1,opportunities});
