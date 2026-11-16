@@ -94,7 +94,7 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 <div id="error" class="op-notice" hidden><h2>Opportunities aren't available yet</h2><p id="error-detail">Please check back soon.</p><a class="op-home" href="index.html">Return to Career Communities</a></div>
 </main>
 <footer><div class="container">BRYC | Find Your Thing<br><small>Opportunity details may change. Always check the organizer's website before applying.</small></div></footer>
-<script src="opportunities-snapshot.js?v=20261116-nursing"></script>
+<script src="opportunities-snapshot.js?v=20261116-status2"></script>
 <script src="fyt-config.js?v=interest-live-20261116"></script>
 <script>
 (()=>{
@@ -105,6 +105,7 @@ if(approved.includes(fromUrl))byId('community').value=fromUrl;
 const incomingQuery=params.get('q');
 if(incomingQuery)byId('q').value=incomingQuery.slice(0,200);
 let opportunities=null;
+const snapshotStatusById=new Map((window.FYT_STATIC_PAYLOAD?.opportunities||[]).map(o=>[o.id,o.applicationStatus]));
 const element=(tag,content,cls)=>{const el=document.createElement(tag);el.textContent=String(content||'');if(cls)el.className=cls;return el};
 const list=x=>Array.isArray(x)?x:[];
 const safeUrl=x=>{try{const u=new URL(x);return u.protocol==='https:'?u.href:null}catch{return null}};
@@ -136,49 +137,54 @@ interestDialog.addEventListener('click',e=>{if(e.target===interestDialog)interes
 interestForm.addEventListener('submit',()=>interestDialog.close());
 
 
-/* Date-aware labels are conservative: a future deadline alone does not prove
-   that registration is open. All messaging is based on the public FYT feed. */
+/* FYT public status labels use the staff-controlled Application Status column.
+   Dates supplement that status but never prove applications are open. */
 const parseDeadline=value=>{
   const str=String(value||'').trim();
-  if(!str)return null;
   const match=str.match(/^(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+(\d{1,2}),?\s+(\d{4})$/i);
   if(!match)return null;
   const months=['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
   const month=months.indexOf(match[1].toLowerCase().slice(0,3));
   const day=Number(match[2]),year=Number(match[3]);
   const date=new Date(year,month,day);
-  if(date.getFullYear()!==year||date.getMonth()!==month||date.getDate()!==day)return null;
-  return date;
+  return date.getFullYear()===year&&date.getMonth()===month&&date.getDate()===day?date:null;
 };
 function classifyStatus(o){
   const update=String(o.fellowUpdate||'').trim();
-  const lower=update.toLowerCase();
-  const cycle=String(o.programCycle||'');
-  const deadlineRaw=String(o.applicationDeadline||'').trim();
-  const deadline=parseDeadline(deadlineRaw);
-  const now=new Date();
-  const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-  const daysLeft=deadline?Math.round((deadline-today)/86400000):null;
-  const closedWords=/\b(closed|has passed|period has passed|deadline passed|no longer accepting)\b/i;
-  const opensLater=/\b(expected to open|will open|opens? in |opens? on |not been announced|not yet announced|check back|next application window|next recruitment|next enrollment|next-season|next season|next cycle|auditions take place by season)\b/i;
-  const yearRound=/\b(year.round|throughout the year|anytime|any time|accepts applications throughout|applications accepted throughout|open year.round)\b/i;
-  const openCurrent=/\b(open now|apply now|register now|registration is open|applications are open|currently accepting|currently enrolling)\b/i;
-  const pastCycle=cycle==='Previously Offered — Next Cycle Unconfirmed';
-  const message=update|| (deadlineRaw?'Listed deadline: '+deadlineRaw:'Visit the organizer for current details');
+  const deadlineText=String(o.applicationDeadline||'').trim();
+  const deadline=parseDeadline(deadlineText);
+  const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const days=deadline?Math.round((deadline-today)/86400000):null;
+  const status=String(o.applicationStatus||'').trim();
+  const message=update||'Check the organizer for current details.';
   const result=(tone,icon,label,msg)=>({tone,icon,label,message:msg||message});
-  if(daysLeft!==null&&daysLeft<0)return result('closed','×','Listed deadline passed',
-    'Listed deadline: '+deadlineRaw+'. Check the organizer for the next opportunity.');
-  if(closedWords.test(lower))return result('closed','×','Applications closed');
-  if(pastCycle)return result('previous','◷','Previous offering · dates unconfirmed');
-  if(opensLater.test(lower))return result('upcoming','▦','Not open yet / next dates pending');
-  if(yearRound.test(lower)&&/\b(applications?|enroll(?:ment)?|volunteer|course|shifts?)\b/i.test(lower))
-    return result('year-round','↻','Open year-round / ongoing');
-  if(daysLeft!==null&&daysLeft>=0&&daysLeft<=15)return result('closing-soon','◷',
-    'Deadline in '+(daysLeft===0?'0 days':daysLeft+' day'+(daysLeft===1?'':'s'))+' · verify availability');
-  if(openCurrent.test(lower))return result('open-now','✓','Open now');
-  if(daysLeft!==null&&daysLeft>15)return result('check','▦','Upcoming deadline · check availability');
-  if(cycle==='Ongoing / Recurring')return result('check','↻','Recurring · check availability');
-  return result('check','ⓘ','Check dates / availability');
+  if(days!==null&&days<0){
+    return result('closed','×','Listed deadline passed',
+      'The listed '+deadlineText+' deadline has passed. Check the organizer for updates.');
+  }
+  if(status==='Closed')return result('closed','×','Applications closed');
+  if(status==='Previously Offered')return result('previous','◷','Previously offered · next cycle unconfirmed');
+  if(status==='Opening Later')return result('upcoming','▦','Opening later · check announced dates');
+  if(status==='Year-Round')return result('year-round','↻','Applications accepted year-round');
+  if(status==='Ongoing / Check Availability')
+    return result('check','↻','Ongoing program · check availability');
+  if(status==='Open Now'){
+    if(days!==null&&days<=15)return result('closing-soon','◷',
+      days===0?'Deadline today · applications listed open':
+      'Closes in '+days+' day'+(days===1?'':'s'));
+    return result('open-now','✓','Applications open');
+  }
+  if(status==='Deadline Listed'){
+    const preface=days===null?'Deadline listed':days===0?'Deadline today':
+      days<=15?'Deadline in '+days+' day'+(days===1?'':'s'):'Deadline listed';
+    return result('check','▦',preface+' · opening not verified');
+  }
+  if(status==='Check Availability')return result('check','ⓘ','Check application availability');
+  // Older feeds might not yet include staff status. Never infer "open" from
+  // a future deadline or raw copy; use conservative labeling instead.
+  if(o.programCycle==='Previously Offered — Next Cycle Unconfirmed')
+    return result('previous','◷','Previously offered · dates unconfirmed');
+  return result('check','ⓘ','Check application availability');
 }
 function statusBanner(o){
   const s=classifyStatus(o);
@@ -232,7 +238,9 @@ window.FYTFeedReceiver=payload=>{
     return;
   }
   received=true;
-  opportunities=payload.opportunities.filter(o=>o.id&&o.name);
+  opportunities=payload.opportunities.filter(o=>o.id&&o.name).map(o=>({
+    ...o,applicationStatus:o.applicationStatus||snapshotStatusById.get(o.id)||''
+  }));
   byId('error').hidden=true;
   render();
 };
