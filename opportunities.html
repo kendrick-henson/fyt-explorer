@@ -180,15 +180,18 @@ function classifyStatus(o){
   if(status==='Closed')return result('closed','×','Applications closed');
   if(status==='Previously Offered')return result('previous','◷','Previously offered','Next cycle unconfirmed');
   if(status==='Opening Later')return result('upcoming','▦','Opens later');
-  if(status==='Year-Round')return result('year-round','↻','Year-round');
-  if(status==='Ongoing / Check Availability')return result('check','↻','Ongoing','Check availability');
+  if(status==='Year-Round')return result('open-now','✓','Open','Year-round');
+  if(status==='Ongoing / Check Availability')return result('open-now','✓','Open','Check availability');
   if(status==='Open Now'){
     if(days!==null&&days<=15)return result('closing-soon','◷',
       days===0?'Deadline today':'Closes in '+days+' day'+(days===1?'':'s'));
     return result('open-now','✓','Open now',deadlineText?'Due '+deadlineText:'');
   }
-  if(status==='Deadline Listed')return result('check','▦','Deadline listed',
-    deadlineText?'Due '+deadlineText:'Opening unverified');
+  if(status==='Deadline Listed'){
+    const listed=result('open-now','✓','Open',deadlineText?'Due '+deadlineText:'Check availability');
+    listed.details=(update?update+' ':'')+'Application availability has not been independently verified. Check the organizer before applying.';
+    return listed;
+  }
   if(status==='Check Availability')return result('check','ⓘ','Check availability');
   if(o.programCycle==='Previously Offered — Next Cycle Unconfirmed')
     return result('previous','◷','Previously offered','Dates unconfirmed');
