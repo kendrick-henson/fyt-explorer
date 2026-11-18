@@ -93,12 +93,12 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 42px;
-  padding: 10px 15px;
+  min-height: 40px;
+  padding: 9px 12px;
   border-radius: 9px;
   color: var(--charcoal);
   text-decoration: none;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 650;
   line-height: 1.2;
   white-space: nowrap;
