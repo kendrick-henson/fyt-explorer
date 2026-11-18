@@ -220,10 +220,14 @@
   </footer>
 
   <!-- The same public-safe approved-opportunities feed used by the directory. -->
+  <script src="opportunities-snapshot.js?v=20261117-tulane"></script>
+  <script src="fyt-search.js?v=round3-1"></script>
   <script src="fyt-config.js"></script>
   <script>
   (() => {
     "use strict";
+    let latestOpportunities=window.FYT_STATIC_PAYLOAD?.opportunities||[];
+    window.FYTHomepageOpportunities=()=>latestOpportunities;
     const slots = [
       {category: "Health", icon: "🩺", style: "preview-health"},
       {category: "Arts", icon: "🎨", style: "preview-arts"},
@@ -249,10 +253,11 @@
     };
     window.FYTFeedReceiver = payload => {
       if (!payload || payload.ok !== true || !Array.isArray(payload.opportunities)) return;
+      latestOpportunities=payload.opportunities;
       const cards = [];
       for (const slot of slots) {
         const item = payload.opportunities.filter(op =>
-          op && op.id && op.name && Array.isArray(op.careerCommunities) &&
+          op && op.id && op.name && !window.FYTSearch.expired(op) && Array.isArray(op.careerCommunities) &&
           op.careerCommunities.includes(slot.category))
           .sort((a, b) => cycleRank(a.programCycle) - cycleRank(b.programCycle))[0];
         if (!item) continue;
@@ -274,12 +279,26 @@
       // Preserve the category links if no approved previews are available.
       if (cards.length === slots.length) stack.replaceChildren(...cards);
     };
+    // Render the approved public snapshot before the live feed returns.
+    if(window.FYT_STATIC_PAYLOAD)window.FYTFeedReceiver(window.FYT_STATIC_PAYLOAD);
     const endpoint = safeUrl(window.FYT_CONFIG && window.FYT_CONFIG.publicFeedUrl);
     if (!endpoint) return;
     const script = document.createElement("script");
     script.src = endpoint;
     // A failed/slow feed leaves the three category links intact.
     document.head.append(script);
+  })();
+  </script>
+
+  <script>
+  (() => {
+    const input=document.getElementById('hero-query');
+    const pick=label=>{
+      const url=new URL('opportunities.html',location.href);
+      url.searchParams.set('q',label);
+      location.assign(url.href);
+    };
+    window.FYTSearch.autocomplete(input,()=>window.FYTHomepageOpportunities?.()||[],pick);
   })();
   </script>
 
