@@ -164,6 +164,14 @@ h2 { font-size: clamp(28px, 4vw, 40px); margin: 12px 0; }
   overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
 }
 
+/* Shared accessible autocomplete for the homepage and directory. */
+.fyt-search-anchor{position:relative;z-index:12}
+.fyt-suggestions{position:absolute;z-index:120;left:0;right:0;top:calc(100% + 5px);border:1px solid #d5cbdc;border-radius:12px;background:#fff;box-shadow:0 12px 30px rgba(30,25,44,.16);max-height:280px;overflow:auto;padding:5px}
+.fyt-suggestions[hidden]{display:none}
+.fyt-suggestion{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;border:0;background:white;color:#333;font:inherit;font-size:13px;width:100%;border-radius:7px;text-align:left;cursor:pointer}
+.fyt-suggestion small{color:#776e7c;font-size:11px;flex-shrink:0}
+.fyt-suggestion:hover,.fyt-suggestion.is-active,.fyt-suggestion:focus-visible{background:#fce8f0;outline:none}
+
 .hero-search {
   display: flex;
   align-items: center;
