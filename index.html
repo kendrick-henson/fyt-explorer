@@ -5,20 +5,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Find Your Thing | BRYC</title>
-  <link rel="stylesheet" href="style.css?v=9">
+  <link rel="stylesheet" href="style.css?v=11">
 </head>
 
 <body>
   <!-- Navigation -->
   <header class="site-header">
     <div class="container nav">
-      <a href="#" class="brand">
+      <a href="index.html" class="brand" aria-label="Find Your Thing home">
         <img src="BRYC Logo-Punched.png" alt="BRYC logo">
         <span>FIND YOUR THING</span>
       </a>
-      <a class="nav-link" href="opportunities.html">
-        All Opportunities
-      </a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="nav-link" href="index.html" aria-current="page">Home</a>
+        <a class="nav-link" href="opportunities.html">All Opportunities</a>
+        <a class="nav-link" href="#career-communities">Career Communities</a>
+        <a class="nav-link" href="https://thebryc.org/brycdown" target="_blank" rel="noopener noreferrer">BRYCdown <span aria-hidden="true">↗</span></a>
+      </nav>
     </div>
   </header>
 
@@ -77,12 +80,11 @@
             <span class="preview-arrow" aria-hidden="true">↗</span>
           </a>
         </div>
-        <p class="preview-footnote">New programs are added as BRYC verifies them.</p>
       </aside>
     </section>
 
     <!-- Career Communities -->
-    <section class="communities container">
+    <section class="communities container" id="career-communities">
       <p class="eyebrow">EXPLORE YOUR FUTURE</p>
       <h2>Explore Career Communities</h2>
       <p class="section-description">
