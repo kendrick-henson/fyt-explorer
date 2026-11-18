@@ -44,7 +44,8 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 .op-status.check{background:#EAF2FA;border-color:#BED3EB;color:#385D86}
 .op-status-details-content{font-size:13px;line-height:1.5;color:#58525e;padding:12px 14px;margin-top:8px;background:#F7F5F9;border:1px solid #E8E1ED;border-radius:10px}
 .op-status-details-content p{margin:0}
-.op-interest-button{background:#333;color:white;border:0;border-radius:8px;cursor:pointer;font:inherit;font-size:13px;font-weight:700;padding:10px 12px}
+.op-interest-button{background:#333;color:white;border:0;border-radius:8px;cursor:pointer;font:inherit;font-size:13px;font-weight:700;padding:10px 13px;align-self:flex-start;max-width:100%}
+.op-request-name-hint{font-size:12px!important;color:#6a6470!important;margin:5px 0 0!important}
 .op-interest-button:hover{background:#1e1e1e}
 .op-interest-button:focus-visible,.op-request-dialog button:focus-visible,.op-request-dialog input:focus-visible{outline:3px solid #ef185d;outline-offset:3px}
 .op-request-dialog{border:0;border-radius:18px;padding:0;width:min(94vw,520px);max-height:90vh;overflow:auto;box-shadow:0 20px 70px rgba(0,0,0,.22)}
@@ -94,10 +95,11 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
       <input type="hidden" id="request-opportunity-id" name="opportunityId">
       <input type="hidden" name="consent" value="yes">
       <div hidden aria-hidden="true"><label>Leave this blank<input name="website" type="text" tabindex="-1" autocomplete="off"></label></div>
-      <label for="request-first">Fellow first name</label>
-      <input id="request-first" name="firstName" type="text" maxlength="40" autocomplete="given-name" required>
-      <label for="request-last">Fellow last name</label>
-      <input id="request-last" name="lastName" type="text" maxlength="50" autocomplete="family-name" required>
+      <label for="request-full">Fellow full name</label>
+      <input id="request-full" type="text" maxlength="91" autocomplete="name" placeholder="First and last name" required aria-describedby="request-name-hint">
+      <p id="request-name-hint" class="op-request-name-hint">Enter your first and last name so BRYC can follow up.</p>
+      <input id="request-first" name="firstName" type="hidden">
+      <input id="request-last" name="lastName" type="hidden">
       <label class="op-request-consent"><input id="request-consent" type="checkbox" required> I understand this request will be shared with BRYC staff for follow-up.</label>
       <div class="op-request-buttons">
         <button type="submit">Send request to BRYC ↗</button>
@@ -133,24 +135,44 @@ const intakeUrl=(window.FYT_CONFIG?.interestIntakeEnabled===true || intakeTestMo
   ? intakeConfigured : null;
 const interestDialog=byId('interest-dialog');
 const interestForm=byId('interest-form');
-function openInterest(o,mode){
+function openInterest(o){
   if(!intakeUrl)return;
-  const notify=mode==='notify';
-  byId('request-title').textContent=notify?'Notify Me':'I’m Interested';
+  byId('request-title').textContent='I’m Interested';
   byId('request-program').textContent=o.name;
-  byId('request-explainer').textContent=notify?
-    'Ask BRYC staff to follow up when there is news about this opportunity. This does not sign you up for organizer alerts or guarantee a reminder.':
-    'Let BRYC staff know you are interested. This is not an application to the program.';
+  byId('request-explainer').textContent=
+    'Let BRYC know you’re interested in this program. Staff may follow up with application help or future updates. This is not a program application or a guarantee of automatic reminders.';
   byId('request-opportunity-id').value=o.id;
   interestForm.action=intakeUrl;
+  byId('request-full').value='';
+  byId('request-full').setCustomValidity('');
   byId('request-first').value='';
   byId('request-last').value='';
   byId('request-consent').checked=false;
   interestDialog.showModal();
 }
+const fullNameInput=byId('request-full');
+fullNameInput.addEventListener('input',()=>fullNameInput.setCustomValidity(''));
 byId('request-cancel').addEventListener('click',()=>interestDialog.close());
 interestDialog.addEventListener('click',e=>{if(e.target===interestDialog)interestDialog.close();});
-interestForm.addEventListener('submit',()=>interestDialog.close());
+interestForm.addEventListener('submit',event=>{
+  // Keep the tested Apps Script contract: it still receives separate firstName
+  // and lastName parameters, but Fellows only fill out one full-name field.
+  const full=fullNameInput.value.normalize('NFC').trim().replace(/\\s+/g,' ');
+  const parts=full.split(' ').filter(Boolean);
+  const first=parts.shift()||'';
+  const last=parts.join(' ');
+  const allowed=/^[\\p{L}\\p{M} .'-]+$/u;
+  if(!first||!last||first.length>40||last.length>50||
+     !allowed.test(first)||!allowed.test(last)){
+    event.preventDefault();
+    fullNameInput.setCustomValidity('Enter your first and last name (letters, spaces, apostrophes, periods, or hyphens).');
+    fullNameInput.reportValidity();
+    return;
+  }
+  byId('request-first').value=first;
+  byId('request-last').value=last;
+  interestDialog.close();
+});
 
 
 /* FYT public status labels use the staff-controlled Application Status column.
@@ -276,6 +298,12 @@ if(!matches.length){results.append(element('div','No matches with these filters.
 for(const o of matches){
 const card=element('article','','op-item');
 card.append(element('p',o.organization,'op-org'),element('h2',o.name),statusBanner(o));
+if(intakeUrl){
+  const action=element('button','I’m Interested ♡','op-interest-button');
+  action.type='button';
+  action.addEventListener('click',()=>openInterest(o));
+  card.append(action);
+}
 const tags=element('div','','op-tags');for(const t of list(o.careerCommunities))tags.append(element('span',t));
 const cycleText=o.programCycle==='Previously Offered — Next Cycle Unconfirmed'?'Previously offered':o.programCycle;
 const ct=element('span',cycleText);if(o.programCycle==='Previously Offered — Next Cycle Unconfirmed')ct.className='past';tags.append(ct);card.append(tags);
@@ -285,15 +313,7 @@ const meta=element('div','','op-meta');meta.append(element('span','Grades: '+lis
 const links=element('div','','op-links');
 const url=safeUrl(o.url);if(url){const a=element('a','Explore program ↗');a.href=url;a.target='_blank';a.rel='noopener noreferrer';links.append(a)}
 
-if(intakeUrl){
-  const status=classifyStatus(o);
-  const notify=['upcoming','previous','closed'].includes(status.tone);
-  const action=element('button',notify?'Notify Me ♡':'I’m Interested ♡','op-interest-button');
-  action.type='button';
-  action.addEventListener('click',()=>openInterest(o,notify?'notify':'interest'));
-  links.append(action);
-}
-// Buttons are intentionally hidden until the private intake endpoint is deployed and tested.
+// Interest requests are shown beneath the deadline; Explore Program remains the footer action.
 card.append(links);results.append(card);
 }
 }
