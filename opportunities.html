@@ -3,13 +3,12 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Explore Opportunities | BRYC Find Your Thing</title>
-<link rel="stylesheet" href="style.css?v=10">
+<link rel="stylesheet" href="style.css?v=11">
 <style>
 body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp(35px,5vw,60px);margin:10px 0}.op-lead{max-width:740px;color:#5b5763}
 .op-filters{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:12px;padding:20px;border:1px solid #e6dfeb;border-radius:16px;background:white;margin:28px 0}
 .op-filters label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;color:#333333}
 .op-filters input,.op-filters select{font:inherit;font-weight:normal;width:100%;padding:12px;border:1px solid #ccc5d7;border-radius:8px;min-height:45px;background:white}
-.op-search-tip{color:#645f66;font-size:13px;margin:-14px 0 15px;line-height:1.5}
 .op-count{display:flex;justify-content:space-between;align-items:center;gap:15px;margin:18px 0;flex-wrap:wrap;color:#696570;font-size:14px}
 .op-count button{color:#333333;text-decoration:underline;border:none;background:none;cursor:pointer;font-weight:700}
 .op-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
@@ -72,7 +71,7 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 <body>
 <header class="site-header"><div class="container nav">
 <a class="brand" href="index.html" aria-label="Find Your Thing home"><img src="BRYC Logo-Punched.png" alt="BRYC logo"><span>FIND YOUR THING</span></a>
-<nav class="site-nav" aria-label="Main navigation"><a class="nav-link" href="index.html">Home</a><a class="nav-link" href="opportunities.html" aria-current="page">All Opportunities</a><a class="nav-link" href="index.html#career-communities">Career Communities</a></nav>
+<nav class="site-nav" aria-label="Main navigation"><a class="nav-link" href="index.html">Home</a><a class="nav-link" href="opportunities.html" aria-current="page">All Opportunities</a><a class="nav-link" href="index.html#career-communities">Career Communities</a><a class="nav-link" href="https://thebryc.org/brycdown" target="_blank" rel="noopener noreferrer">BRYCdown <span aria-hidden="true">↗</span></a></nav>
 </div></header>
 <main class="op-main container">
 <p class="eyebrow">YOUR INTERESTS. YOUR FUTURE.</p><h1>Explore opportunities.</h1>
@@ -83,7 +82,6 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 <label for="grade">Your grade<select id="grade"><option value="">Any grade</option><option value="8">8th</option><option value="9">9th</option><option value="10">10th</option><option value="11">11th</option><option value="12">12th</option></select></label>
 <label for="cycle">Program cycle<select id="cycle"><option value="">Any cycle</option><option>2027 Confirmed</option><option>Ongoing / Recurring</option><option>Previously Offered — Next Cycle Unconfirmed</option></select></label>
 </div>
-<p class="op-search-tip">Tip: try a career or an interest—like doctor, photographer, robotics, or coding. Related terms can find relevant programs.</p>
 <div class="op-count"><span id="count" aria-live="polite">Loading opportunities…</span><button id="reset" type="button">Clear filters</button></div>
 <div class="op-grid" id="results"></div>
 <div class="directory-footer-action"><a href="opportunities.html" class="section-action-link">Explore All Opportunities →</a></div>
