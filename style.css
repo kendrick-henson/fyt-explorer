@@ -46,8 +46,12 @@ body {
    =================================== */
 
 .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   background-color: var(--white);
   border-bottom: 1px solid #e8e3df;
+  box-shadow: 0 2px 12px rgba(40,37,54,.045);
 }
 
 .nav {
@@ -77,8 +81,44 @@ body {
 .nav-link {
   color: var(--charcoal);
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 700;
 }
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px 19px;
+}
+.site-nav .nav-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  white-space: nowrap;
+  font-size: 14px;
+  border-bottom: 2px solid transparent;
+}
+.site-nav .nav-link:hover,
+.site-nav .nav-link[aria-current="page"] {
+  color: #c6124d;
+  border-bottom-color: #ef185d;
+}
+.site-nav .nav-link:focus-visible,
+.brand:focus-visible {
+  outline: 3px solid #ef185d;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+.brand { flex-shrink: 0; }
+#career-communities { scroll-margin-top: 115px; }
+@media (max-width: 900px) {
+  .nav { flex-wrap: wrap; gap: 4px 12px; padding: 9px 0; }
+  .brand img { width: 45px; height: 45px; }
+  .site-nav { width: 100%; justify-content: flex-start; flex-wrap: nowrap; gap: 17px; overflow-x: auto; scrollbar-width: thin; }
+  .site-nav .nav-link { font-size: 13px; flex-shrink: 0; min-height: 38px; }
+  #career-communities { scroll-margin-top: 135px; }
+}
+
 
 /* ===================================
    WELCOME SECTION — COMPACT SPLIT HERO
