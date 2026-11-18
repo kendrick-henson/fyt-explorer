@@ -59,7 +59,7 @@ body {
   justify-content: space-between;
   align-items: center;
   gap: 22px;
-  padding: 9px 0;
+  padding: 10px 0;
 }
 
 .brand {
@@ -70,8 +70,8 @@ body {
   text-decoration: none;
   color: var(--charcoal);
   font-weight: 800;
-  font-size: 17px;
-  letter-spacing: .1px;
+  font-size: 18px;
+  letter-spacing: 0;
   white-space: nowrap;
 }
 
@@ -85,7 +85,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 7px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
@@ -93,13 +93,13 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 39px;
-  padding: 9px 13px;
+  min-height: 42px;
+  padding: 10px 15px;
   border-radius: 9px;
   color: var(--charcoal);
   text-decoration: none;
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 650;
   line-height: 1.2;
   white-space: nowrap;
   transition: background-color .15s ease, color .15s ease;
