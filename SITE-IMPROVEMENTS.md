@@ -15,3 +15,9 @@ Updated November 16, 2026.
 - Evaluate whether BRYC wants account-based saved opportunities. This would require secure Fellow authentication and BRYC youth-data review; do not silently replace local device saving with a public names database.
 - Continue monitoring successful private intake submissions and staff follow-up.
 - Do not claim visual, accessibility or usability scores of 9/10 without real student testing.
+
+## Supervisor feedback implementation — November 18, 2026
+
+- [x] **Round 1: Navigation and visual cleanup.** Added matching four-link navigation across the homepage and directory (Home, All Opportunities, Career Communities, BRYCdown), made the shared header sticky, added horizontally scrollable navigation on narrow screens, linked the homepage Career Communities anchor, standardized Explore All Opportunities links, and removed redundant search/inspiration supporting text. Both pages use CSS v11. Retained all public opportunity functionality and private interest intake.
+- [ ] **Round 2: Opportunity cards.** Unify the action label as I'm Interested, move it beneath application status, shorten all descriptions and remove Read More, and simplify the name entry while preserving private tracker compatibility.
+- [ ] **Round 3: Discovery.** Add accessible autocomplete, typo-tolerant search, verified deadline/opening-based sort, and hide passed deadlines from the public directory without deleting internal historical records.
