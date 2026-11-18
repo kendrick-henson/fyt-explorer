@@ -24,6 +24,8 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 .op-status-details{min-width:0;max-width:100%}
 .op-status-actions{display:flex;align-items:flex-start;flex-wrap:wrap;gap:10px;margin:2px 0 4px}
 .op-status-actions>.op-status-details{flex:0 1 auto;max-width:100%}
+.op-status-actions>.op-status-details[open]{flex:1 0 100%;width:100%}
+.op-status-actions>.op-status-details[open] .op-status-details-content{max-width:100%}
 .op-status-actions>.op-interest-button{flex:0 0 auto}
 @media(max-width:390px){.op-status-actions{gap:9px}}
 
