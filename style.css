@@ -58,87 +58,66 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 22px;
-  padding: 10px 0;
+  gap: 20px;
+  padding: 16px 0;
 }
 
 .brand {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   flex-shrink: 0;
-  gap: 10px;
+  gap: 14px;
   text-decoration: none;
   color: var(--charcoal);
-  font-weight: 800;
-  font-size: 18px;
-  letter-spacing: 0;
-  white-space: nowrap;
+  font-weight: bold;
+  letter-spacing: 1px;
 }
 
 .brand img {
-  width: 43px;
-  height: 43px;
+  width: 58px;
+  height: 58px;
   object-fit: contain;
 }
 
+.nav-link {
+  color: var(--charcoal);
+  text-decoration: none;
+  font-weight: 700;
+}
 .site-nav {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
-  gap: 10px;
-  flex-wrap: wrap;
+  gap: 8px 19px;
 }
-
 .site-nav .nav-link {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   min-height: 40px;
-  padding: 9px 12px;
-  border-radius: 9px;
-  color: var(--charcoal);
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 650;
-  line-height: 1.2;
   white-space: nowrap;
-  transition: background-color .15s ease, color .15s ease;
+  font-size: 14px;
+  border-bottom: 2px solid transparent;
 }
-
-.site-nav .nav-link:hover {
-  background: #f5f0f4;
-  color: #333333;
-}
-
+.site-nav .nav-link:hover,
 .site-nav .nav-link[aria-current="page"] {
-  background: #fce4ed;
-  color: #333333;
+  color: #c6124d;
+  border-bottom-color: #ef185d;
 }
-
 .site-nav .nav-link:focus-visible,
 .brand:focus-visible {
   outline: 3px solid #ef185d;
   outline-offset: 3px;
+  border-radius: 3px;
 }
-
-#career-communities { scroll-margin-top: 92px; }
-
+#career-communities { scroll-margin-top: 115px; }
 @media (max-width: 900px) {
-  .nav { flex-wrap: wrap; gap: 5px 12px; padding: 8px 0; }
-  .brand { font-size: 16px; }
-  .brand img { width: 40px; height: 40px; }
-  .site-nav {
-    width: 100%;
-    justify-content: flex-start;
-    flex-wrap: nowrap;
-    gap: 5px;
-    overflow-x: auto;
-    scrollbar-width: thin;
-  }
-  .site-nav .nav-link { font-size: 13px; min-height: 36px; padding: 8px 11px; flex-shrink: 0; }
-  #career-communities { scroll-margin-top: 130px; }
+  .nav { flex-wrap: wrap; gap: 4px 12px; padding: 9px 0; }
+  .brand img { width: 45px; height: 45px; }
+  .site-nav { width: 100%; justify-content: flex-start; flex-wrap: nowrap; gap: 17px; overflow-x: auto; scrollbar-width: thin; }
+  .site-nav .nav-link { font-size: 13px; flex-shrink: 0; min-height: 38px; }
+  #career-communities { scroll-margin-top: 135px; }
 }
-
 
 /* ===================================
    WELCOME SECTION — COMPACT SPLIT HERO
