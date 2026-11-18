@@ -291,6 +291,46 @@ const conciseDescriptions={
 };
 const cardDescription=o=>conciseDescriptions[o.id]||o.description;
 
+// Short card-facing cost labels. Unknown costs remain explicit rather than
+// incorrectly asserting a fee or free participation. Full details stay in data.
+const costLabels={
+  "FYT-00001": "Free",
+  "FYT-00002": "Free",
+  "FYT-00003": "Free",
+  "FYT-00009": "Free",
+  "FYT-00016": "Free",
+  "FYT-00017": "Free",
+  "FYT-00018": "Free",
+  "FYT-00020": "Free",
+  "FYT-00032": "Free",
+  "FYT-00035": "Free",
+  "FYT-00036": "Free",
+  "FYT-00037": "Free",
+  "FYT-00043": "Free",
+  "FYT-00048": "Free",
+  "FYT-00050": "Free",
+  "FYT-00056": "Free",
+  "FYT-00057": "Free",
+  "FYT-00062": "Free",
+  "FYT-00022": "Have to pay",
+  "FYT-00024": "Have to pay",
+  "FYT-00028": "Have to pay",
+  "FYT-00034": "Have to pay",
+  "FYT-00046": "Have to pay",
+  "FYT-00060": "Have to pay",
+  "FYT-00061": "Have to pay",
+  "FYT-00063": "Have to pay",
+  "FYT-00025": "Funding available",
+  "FYT-00076": "Funding available"
+};
+function displayCost(o){
+  if(costLabels[o.id])return costLabels[o.id];
+  const raw=String(o.cost||'').toLowerCase();
+  if(/^(free|no fee)\b/.test(raw))return 'Free';
+  if(/^\$\d|^fee varies|^winter \d{4} class tuition|^class enrollment is required/.test(raw))return 'Have to pay';
+  return 'Cost not listed';
+}
+
 function render(){
 if(!opportunities)return;
 const q=byId('q').value.trim().toLowerCase(),c=byId('community').value,g=byId('grade').value,cycle=byId('cycle').value;
@@ -315,7 +355,7 @@ if(intakeUrl){
 }
 card.append(statusActions);
 card.append(element('p',cardDescription(o),'op-description'));
-const meta=element('div','','op-meta');meta.append(element('span','Grades: '+list(o.eligibleGrades).join(', ')));if(o.type)meta.append(element('span','Type: '+o.type));if(o.cost)meta.append(element('span','Cost/pay: '+o.cost));card.append(meta);
+const meta=element('div','','op-meta');meta.append(element('span','Grades: '+list(o.eligibleGrades).join(', ')));if(o.type)meta.append(element('span','Type: '+o.type));meta.append(element('span','Cost: '+displayCost(o)));card.append(meta);
 const tags=element('div','','op-tags');for(const t of list(o.careerCommunities))tags.append(element('span',t));
 const cycleText=o.programCycle==='Previously Offered — Next Cycle Unconfirmed'?'Previously offered':o.programCycle;
 const ct=element('span',cycleText);if(o.programCycle==='Previously Offered — Next Cycle Unconfirmed')ct.className='past';tags.append(ct);card.append(tags);
