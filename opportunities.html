@@ -18,10 +18,7 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 .op-tags{display:flex;gap:5px;flex-wrap:wrap}.op-tags span{background:#ede7f8;color:#333333;font-size:11px;border-radius:40px;padding:4px 8px;font-weight:700}
 .op-tags span.past{background:#f7ead7;color:#704d24}
 .op-item p{margin:0;font-size:14px}
-.op-description{line-height:1.55;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden}
-.op-description.expanded{display:block;overflow:visible}
-.op-more{align-self:flex-start;background:none;border:0;padding:0;color:#333;text-decoration:underline;text-underline-offset:3px;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
-.op-more:focus-visible{outline:3px solid #ef185d;outline-offset:3px}
+.op-description{line-height:1.55}
 .op-item .op-meta{color:#5b5763;font-size:12px;display:grid;gap:4px}
 /* Clickable colored status pill; the expanded explanation lives inside it. */
 .op-status-wrap{min-width:0}
@@ -65,6 +62,7 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 .op-request-buttons button[type=submit]{background:#ef185d;color:white}
 .op-request-buttons button[type=button]{background:#eee;color:#333}
 .op-links{display:flex;gap:9px;flex-wrap:wrap;margin-top:auto}.op-links a{background:#ef185d;color:white;border-radius:8px;text-decoration:none;padding:10px 12px;font-weight:700;font-size:13px}.op-links a:hover{background:#c6124d}
+.directory-footer-action{text-align:center;margin-top:30px}.directory-footer-action .section-action-link{display:inline-block}
 .op-notice{background:white;border:1px solid #e6dfeb;border-radius:14px;padding:28px;max-width:750px}
 .op-home{display:inline-block;color:#333333;text-decoration:underline;margin-top:12px}
 @media(max-width:950px){.op-grid{grid-template-columns:repeat(2,1fr)}.op-filters{grid-template-columns:1fr 1fr}}
@@ -73,8 +71,8 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 </head>
 <body>
 <header class="site-header"><div class="container nav">
-<a class="brand" href="index.html"><img src="BRYC Logo-Punched.png" alt="BRYC logo"><span>FIND YOUR THING</span></a>
-<a class="nav-link" href="index.html">← Career Communities</a>
+<a class="brand" href="index.html" aria-label="Find Your Thing home"><img src="BRYC Logo-Punched.png" alt="BRYC logo"><span>FIND YOUR THING</span></a>
+<nav class="site-nav" aria-label="Main navigation"><a class="nav-link" href="index.html">Home</a><a class="nav-link" href="opportunities.html" aria-current="page">All Opportunities</a><a class="nav-link" href="index.html#career-communities">Career Communities</a></nav>
 </div></header>
 <main class="op-main container">
 <p class="eyebrow">YOUR INTERESTS. YOUR FUTURE.</p><h1>Explore opportunities.</h1>
@@ -88,6 +86,7 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 <p class="op-search-tip">Tip: try a career or an interest—like doctor, photographer, robotics, or coding. Related terms can find relevant programs.</p>
 <div class="op-count"><span id="count" aria-live="polite">Loading opportunities…</span><button id="reset" type="button">Clear filters</button></div>
 <div class="op-grid" id="results"></div>
+<div class="directory-footer-action"><a href="opportunities.html" class="section-action-link">Explore All Opportunities →</a></div>
 <dialog id="interest-dialog" class="op-request-dialog" aria-labelledby="request-title">
   <div class="op-request-dialog-content">
     <h2 id="request-title">I'm Interested</h2>
@@ -282,22 +281,7 @@ card.append(element('p',o.organization,'op-org'),element('h2',o.name),statusBann
 const tags=element('div','','op-tags');for(const t of list(o.careerCommunities))tags.append(element('span',t));
 const cycleText=o.programCycle==='Previously Offered — Next Cycle Unconfirmed'?'Previously offered':o.programCycle;
 const ct=element('span',cycleText);if(o.programCycle==='Previously Offered — Next Cycle Unconfirmed')ct.className='past';tags.append(ct);card.append(tags);
-const desc=element('p',o.description,'op-description');
-card.append(desc);
-if(String(o.description||'').length>165){
-  const more=element('button','Read more','op-more');
-  more.type='button';
-  more.setAttribute('aria-expanded','false');
-  const descId='op-desc-'+String(o.id).replace(/[^a-zA-Z0-9-]/g,'');
-  desc.id=descId;
-  more.setAttribute('aria-controls',descId);
-  more.addEventListener('click',()=>{
-    const expanded=desc.classList.toggle('expanded');
-    more.textContent=expanded?'Show less':'Read more';
-    more.setAttribute('aria-expanded',String(expanded));
-  });
-  card.append(more);
-}
+card.append(element('p',o.description,'op-description'));
 const meta=element('div','','op-meta');meta.append(element('span','Grades: '+list(o.eligibleGrades).join(', ')));if(o.type)meta.append(element('span','Type: '+o.type));if(o.cost)meta.append(element('span','Cost/pay: '+o.cost));card.append(meta);
 // Fellow-facing update appears once inside the status banner near the card title.
 const links=element('div','','op-links');
