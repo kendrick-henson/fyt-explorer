@@ -29,18 +29,18 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 .op-status-actions>.op-interest-button{flex:0 0 auto}
 @media(max-width:390px){.op-status-actions{gap:9px}}
 
-.op-status{display:inline-flex;align-items:center;gap:8px;max-width:100%;padding:8px 11px;border-radius:999px;border:1px solid transparent;font-size:12px;line-height:1.3}
+.op-status{display:inline-flex;align-items:center;justify-content:space-between;gap:7px;width:166px;max-width:100%;min-height:37px;padding:7px 10px;border-radius:999px;border:1px solid transparent;font-size:11px;line-height:1.2;white-space:nowrap}
 .op-status-details summary{list-style:none;cursor:pointer;user-select:none}
 .op-status-details summary::-webkit-details-marker{display:none}
 .op-status-details summary::marker{content:''}
 .op-status-details summary:focus-visible{outline:3px solid #EF185D;outline-offset:3px}
 .op-status-details summary:hover{filter:brightness(.97)}
-.op-status-details summary .op-status-chevron{display:inline-block;margin-left:3px;font-size:14px;line-height:1;transition:transform .2s ease;flex-shrink:0}
+.op-status-details summary .op-status-chevron{display:inline-block;margin-left:auto;font-size:14px;line-height:1;transition:transform .2s ease;flex-shrink:0}
 .op-status-details[open] summary .op-status-chevron{transform:rotate(180deg)}
 .op-status-details[open] summary{border-radius:14px}
-.op-status-icon{display:inline-flex;align-items:center;justify-content:center;flex:0 0 16px;width:16px;font-size:15px;font-weight:800}
-.op-status-copy{min-width:0;display:inline-flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px}
-.op-status-label{font-size:11px;letter-spacing:.035em;text-transform:uppercase;font-weight:800}
+.op-status-icon{display:inline-flex;align-items:center;justify-content:center;flex:0 0 14px;width:14px;font-size:13px;font-weight:800}
+.op-status-copy{min-width:0;display:inline-flex;align-items:center;flex:1;white-space:nowrap}
+.op-status-label{font-size:10px;letter-spacing:.015em;text-transform:uppercase;font-weight:800;white-space:nowrap}
 .op-status-message{font-size:11px;font-weight:600}
 .op-status.open-now{background:#E4F6E9;border-color:#A7D8B7;color:#23683F}
 .op-status.year-round{background:#FFF0DE;border-color:#F1CC9E;color:#A34E13}
@@ -51,6 +51,8 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 .op-status.check{background:#EAF2FA;border-color:#BED3EB;color:#385D86}
 .op-status-details-content{font-size:13px;line-height:1.5;color:#58525e;padding:12px 14px;margin-top:8px;background:#F7F5F9;border:1px solid #E8E1ED;border-radius:10px}
 .op-status-details-content p{margin:0}
+.op-status-details-content p+p{margin-top:6px}
+.op-status-expanded-hint{font-weight:750;color:#333}
 .op-interest-button{background:#333;color:white;border:0;border-radius:8px;cursor:pointer;font:inherit;font-size:13px;font-weight:700;padding:10px 13px;align-self:flex-start;max-width:100%}
 .op-request-name-hint{font-size:12px!important;color:#6a6470!important;margin:5px 0 0!important}
 .op-interest-button:hover{background:#1e1e1e}
@@ -203,14 +205,14 @@ function classifyStatus(o){
   const status=String(o.applicationStatus||'').trim();
   const result=(tone,icon,label,hint='')=>({tone,icon,label,hint,details:update});
   if(days!==null&&days<0)return result('closed','×','Deadline passed',deadlineText);
-  if(status==='Closed')return result('closed','×','Applications closed');
+  if(status==='Closed')return result('closed','×','Closed');
   if(status==='Previously Offered')return result('previous','◷','Previously offered','Next cycle unconfirmed');
   if(status==='Opening Later')return result('upcoming','▦','Opens later');
   if(status==='Year-Round')return result('open-now','✓','Open','Year-round');
   if(status==='Ongoing / Check Availability')return result('open-now','✓','Open','Check availability');
   if(status==='Open Now'){
     if(days!==null&&days<=15)return result('closing-soon','◷',
-      days===0?'Deadline today':'Closes in '+days+' day'+(days===1?'':'s'));
+      days===0?'Deadline today':'Closes soon','Due '+deadlineText);
     return result('open-now','✓','Open now',deadlineText?'Due '+deadlineText:'');
   }
   if(status==='Deadline Listed'){
@@ -231,12 +233,12 @@ function statusBanner(o){
   icon.setAttribute('aria-hidden','true');
   const copy=element('span','','op-status-copy');
   copy.append(element('span',s.label,'op-status-label'));
-  if(s.hint)copy.append(element('span',s.hint,'op-status-message'));
   const chevron=element('span','⌄','op-status-chevron');
   chevron.setAttribute('aria-hidden','true');
   banner.append(icon,copy,chevron);
   banner.setAttribute('aria-label',s.label+(s.hint?' — '+s.hint:'')+'. Show application details');
   const description=element('div','','op-status-details-content');
+  if(s.hint)description.append(element('p',s.hint,'op-status-expanded-hint'));
   description.append(element('p',s.details||'Check the organizer’s website for current application information.'));
   details.append(banner,description);
   return details;
