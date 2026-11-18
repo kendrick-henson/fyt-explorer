@@ -157,11 +157,11 @@ interestDialog.addEventListener('click',e=>{if(e.target===interestDialog)interes
 interestForm.addEventListener('submit',event=>{
   // Keep the tested Apps Script contract: it still receives separate firstName
   // and lastName parameters, but Fellows only fill out one full-name field.
-  const full=fullNameInput.value.normalize('NFC').trim().replace(/\\s+/g,' ');
+  const full=fullNameInput.value.normalize('NFC').trim().replace(/\s+/g,' ');
   const parts=full.split(' ').filter(Boolean);
   const first=parts.shift()||'';
   const last=parts.join(' ');
-  const allowed=/^[\\p{L}\\p{M} .'-]+$/u;
+  const allowed=/^[\p{L}\p{M} .'-]+$/u;
   if(!first||!last||first.length>40||last.length>50||
      !allowed.test(first)||!allowed.test(last)){
     event.preventDefault();
@@ -285,6 +285,46 @@ function interestMatch(o,query){
   return {match:true,score};
 }
 
+const conciseDescriptions={
+  "FYT-00001": "Explore mental and behavioral health careers through workshops, career panels, college experiences, and mentoring with LSU professionals.",
+  "FYT-00002": "Spend a week exploring healthcare careers through facility tours, clinical skills activities, science experiments, and conversations with Ochsner professionals.",
+  "FYT-00003": "Gain paid work experience in hospital departments such as Finance, Guest Services, Arts in Medicine, and Public Safety while developing professional skills.",
+  "FYT-00004": "Support children during supervised aquatic therapy activities through Woman’s Hospital’s Geaux Strong program. Volunteers must be strong swimmers and at least 16.",
+  "FYT-00009": "Join LSU Engineering research teams, work with faculty and graduate students, and build laboratory, research, and presentation skills.",
+  "FYT-00016": "Learn coding online through free courses in game design, AI, cybersecurity, data science, and web development, with access to career events.",
+  "FYT-00017": "Explore web development, artificial intelligence, or data science at free virtual summer coding camps, and connect with a coding alumni community.",
+  "FYT-00018": "Work with a team to create an app or AI solution to a community problem, build a business plan, and pitch your idea.",
+  "FYT-00020": "Visit LIGO Livingston for free, hands-on physics exhibits and observatory tours during its monthly Science Saturday program.",
+  "FYT-00022": "Learn about animal care, educate zoo visitors, and participate in wildlife enrichment and presentations through BREC’s teen Zoo Krewe.",
+  "FYT-00024": "Perform in youth orchestras organized by the Baton Rouge Symphony. A great option for students interested in instrumental music.",
+  "FYT-00025": "Build your musical skills through LSU faculty-led lessons, rehearsals, and concert and chamber ensembles.",
+  "FYT-00028": "Explore acting, singing, musical theater, improvisation, and backstage production through weekly classes and a final showcase.",
+  "FYT-00031": "Build leadership, academic, and life skills through Saturday educational and cultural activities with the Louisiana Leadership Institute.",
+  "FYT-00032": "Practice and perform poetry in a recitation competition with regional, state, and national opportunities and prizes.",
+  "FYT-00034": "Submit student newspaper, yearbook, broadcast, radio, or social media projects for a statewide media competition.",
+  "FYT-00035": "Learn journalism, report and publish stories, and receive college preparation and advising through Princeton’s summer program.",
+  "FYT-00036": "Share youth perspectives with Baton Rouge city-parish leaders and participate in civic projects and community outreach.",
+  "FYT-00037": "Help advise the Louisiana Legislature on issues affecting young people, including education, health, the environment, and civic engagement.",
+  "FYT-00043": "Create and pitch a business or social venture that solves a real problem, with opportunities to win competition prizes.",
+  "FYT-00046": "Explore emergency medical services, train in CPR and emergency response, and gain practical experience with Baton Rouge EMS.",
+  "FYT-00047": "Learn about law enforcement, public safety, courtroom procedures, and teamwork through BRPD’s youth Explorer program.",
+  "FYT-00048": "Prepare for college through tutoring, mentoring, workshops, test preparation, career exploration, and cultural trips.",
+  "FYT-00050": "Build college readiness through tutoring, counseling, financial aid guidance, and STEM-focused academic support.",
+  "FYT-00053": "Connect with local mentors and develop life skills, academic readiness, and college preparation through Project Excel.",
+  "FYT-00054": "Participate in 4-H contests, hands-on career workshops, leadership activities, and statewide youth events.",
+  "FYT-00056": "Help local families by sorting and packing food during service opportunities with the Greater Baton Rouge Food Bank.",
+  "FYT-00057": "Earn volunteer credit by reviewing books and audiobooks, or explore in-person service opportunities at local libraries.",
+  "FYT-00059": "Support local blood drives by welcoming donors, assisting with check-in, and offering refreshments. No medical procedures are involved.",
+  "FYT-00060": "Join a weeklong theater camp to learn acting, singing, and dancing, and perform in a final showcase.",
+  "FYT-00061": "Perform in youth musical theater productions or help backstage with costumes, sets, and production work.",
+  "FYT-00062": "Develop leadership through CYT’s high school HYPE team, including community service, fundraising, and team-building activities.",
+  "FYT-00063": "Attend a student media conference at LSU with workshops in reporting, photography, video, social media, and networking.",
+  "FYT-00064": "Perform with other Baton Rouge-area students in the Louisiana Leadership Institute’s youth marching band.",
+  "FYT-00075": "Share your ideas and help shape the future of Mid City Civic Theatre through its Youth Board Vision Committee.",
+  "FYT-00076": "Explore college-level classes in science, engineering, health, humanities, and the arts at Tulane. Choose commuter or residential summer courses."
+};
+const cardDescription=o=>conciseDescriptions[o.id]||o.description;
+
 function render(){
 if(!opportunities)return;
 const q=byId('q').value.trim().toLowerCase(),c=byId('community').value,g=byId('grade').value,cycle=byId('cycle').value;
@@ -307,7 +347,7 @@ if(intakeUrl){
 const tags=element('div','','op-tags');for(const t of list(o.careerCommunities))tags.append(element('span',t));
 const cycleText=o.programCycle==='Previously Offered — Next Cycle Unconfirmed'?'Previously offered':o.programCycle;
 const ct=element('span',cycleText);if(o.programCycle==='Previously Offered — Next Cycle Unconfirmed')ct.className='past';tags.append(ct);card.append(tags);
-card.append(element('p',o.description,'op-description'));
+card.append(element('p',cardDescription(o),'op-description'));
 const meta=element('div','','op-meta');meta.append(element('span','Grades: '+list(o.eligibleGrades).join(', ')));if(o.type)meta.append(element('span','Type: '+o.type));if(o.cost)meta.append(element('span','Cost/pay: '+o.cost));card.append(meta);
 // Fellow-facing update appears once inside the status banner near the card title.
 const links=element('div','','op-links');
