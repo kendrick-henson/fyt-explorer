@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="style.css?v=15">
 <style>
 body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp(35px,5vw,60px);margin:10px 0}.op-lead{max-width:740px;color:#5b5763}
-.op-filters{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:12px;padding:20px;border:1px solid #e6dfeb;border-radius:16px;background:white;margin:28px 0}
+.op-filters{display:grid;grid-template-columns:minmax(0,2fr) repeat(2,minmax(0,1fr));gap:12px;padding:20px;border:1px solid #e6dfeb;border-radius:16px;background:white;margin:28px 0}
 .op-filters label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;color:#333333}
 .op-filters input,.op-filters select{font:inherit;font-weight:normal;width:100%;padding:12px;border:1px solid #ccc5d7;border-radius:8px;min-height:45px;background:white}
 .fyt-search-anchor{position:relative;min-width:0}
@@ -18,19 +18,19 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 .op-count{display:flex;justify-content:space-between;align-items:center;gap:15px;margin:18px 0;flex-wrap:wrap;color:#696570;font-size:14px}
 .op-count button{color:#333333;text-decoration:underline;border:none;background:none;cursor:pointer;font-weight:700}
 .op-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
-.op-item{border:1px solid #e6dfeb;background:white;border-radius:15px;padding:22px;display:flex;flex-direction:column;gap:11px;min-width:0}
+.op-item{border:1px solid #e6dfeb;background:white;border-radius:15px;padding:22px;display:grid;grid-template-rows:minmax(3.45em,auto) minmax(42px,auto) minmax(6.2em,auto) minmax(5.4em,auto) 1fr auto;gap:12px;min-width:0;align-content:start}
 .op-item h2{font-size:20px;color:#282536;margin:0;overflow-wrap:anywhere}
-.op-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:auto;padding-top:10px}.op-tags span{background:#ede7f8;color:#333333;font-size:11px;border-radius:40px;padding:4px 8px;font-weight:700}
+.op-tags{display:flex;gap:5px;flex-wrap:wrap;align-content:end;align-items:flex-end;align-self:end;padding-top:8px;min-height:41px}.op-tags span{background:#ede7f8;color:#333333;font-size:11px;border-radius:40px;padding:4px 8px;font-weight:700}
 .op-tags span.past{background:#f7ead7;color:#704d24}
 .op-item p{margin:0;font-size:14px}
 .op-description{line-height:1.55}
-.op-item .op-meta{color:#5b5763;font-size:12px;display:grid;gap:4px}
+.op-item .op-meta{color:#5b5763;font-size:12px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;line-height:1.45}
 /* Clickable colored status pill; the expanded explanation lives inside it. */
 .op-status-wrap{min-width:0}
 .op-status-details{min-width:0;max-width:100%}
-.op-status-actions{display:flex;align-items:flex-start;flex-wrap:wrap;gap:10px;margin:2px 0 4px}
+.op-status-actions{display:flex;align-items:flex-start;align-content:flex-start;flex-wrap:wrap;gap:8px;margin:0}
 .op-status-actions>.op-status-details{flex:0 1 auto;max-width:100%}
-.op-status-actions>.op-status-details[open]{flex:1 0 100%;width:100%}
+.op-status-actions>.op-status-details[open]{flex:1 0 100%;width:100%;grid-row:auto}
 .op-status-actions>.op-status-details[open] .op-status-details-content{max-width:100%}
 .op-status-actions>.op-interest-button{flex:0 0 auto}
 @media(max-width:390px){.op-status-actions{gap:9px}}
@@ -81,7 +81,7 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 .op-notice{background:white;border:1px solid #e6dfeb;border-radius:14px;padding:28px;max-width:750px}
 .op-home{display:inline-block;color:#333333;text-decoration:underline;margin-top:12px}
 @media(max-width:950px){.op-grid{grid-template-columns:repeat(2,1fr)}.op-filters{grid-template-columns:1fr 1fr}}
-@media(max-width:650px){.op-grid,.op-filters{grid-template-columns:1fr}.op-main{padding:35px 0 65px}}
+@media(max-width:650px){.op-grid,.op-filters{grid-template-columns:1fr}.op-main{padding:35px 0 65px}.op-item{grid-template-rows:auto auto auto auto 1fr auto;gap:11px}.op-tags{min-height:0}}
 </style>
 </head>
 <body>
@@ -96,7 +96,6 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 <label for="q">Search<input id="q" type="search" placeholder="Try nursing, art, robotics…"></label>
 <label for="community">Career Community<select id="community"><option value="">All communities</option><option>Arts</option><option>Business</option><option>Education</option><option>Engineering</option><option>Health</option><option>Law</option><option>General Exploration</option></select></label>
 <label for="grade">Your grade<select id="grade"><option value="">Any grade</option><option value="8">8th</option><option value="9">9th</option><option value="10">10th</option><option value="11">11th</option><option value="12">12th</option></select></label>
-<label for="cycle">Program cycle<select id="cycle"><option value="">Any cycle</option><option>2027 Confirmed</option><option>Ongoing / Recurring</option><option>Previously Offered — Next Cycle Unconfirmed</option></select></label>
 </div>
 <div class="op-count"><span id="count" aria-live="polite">Loading opportunities…</span><button id="reset" type="button">Clear filters</button></div>
 <div class="op-grid" id="results"></div>
@@ -333,11 +332,11 @@ function displayCost(o){
 
 function render(){
 if(!opportunities)return;
-const q=byId('q').value.trim().toLowerCase(),c=byId('community').value,g=byId('grade').value,cycle=byId('cycle').value;
+const q=byId('q').value.trim().toLowerCase(),c=byId('community').value,g=byId('grade').value;
 const visible=opportunities.filter(o=>!window.FYTSearch.expired(o));
 const matches=visible.map(o=>({o,relevance:window.FYTSearch.match(o,q)}))
   .filter(x=>(!c||list(x.o.careerCommunities).includes(c))&&
-    (!g||list(x.o.eligibleGrades).includes(g))&&(!cycle||x.o.programCycle===cycle)&&x.relevance.match)
+    (!g||list(x.o.eligibleGrades).includes(g))&&x.relevance.match)
   .sort((a,b)=>window.FYTSearch.sort(a.o,b.o)||b.relevance.score-a.relevance.score).map(x=>x.o);
 byId('count').textContent='Showing '+matches.length+' of '+visible.length+' current opportunities';
 const results=byId('results');results.replaceChildren();
@@ -368,9 +367,9 @@ card.append(links);results.append(card);
 }
 }
 function error(message){byId('count').textContent='Feed unavailable';byId('results').replaceChildren();byId('error').hidden=false;byId('error-detail').textContent=message}
-for(const id of ['q','community','grade','cycle'])byId(id).addEventListener(id==='q'?'input':'change',render);
+for(const id of ['q','community','grade'])byId(id).addEventListener(id==='q'?'input':'change',render);
 const searchAutocomplete=window.FYTSearch.autocomplete(byId('q'),()=>opportunities||[],()=>render());
-byId('reset').addEventListener('click',()=>{for(const id of ['q','community','grade','cycle'])byId(id).value='';history.replaceState(null,'',location.pathname);render()});
+byId('reset').addEventListener('click',()=>{for(const id of ['q','community','grade'])byId(id).value='';history.replaceState(null,'',location.pathname);render()});
 let received=false;
 window.FYTFeedReceiver=payload=>{
   if(!payload||payload.ok!==true||!Array.isArray(payload.opportunities)){
