@@ -35,17 +35,17 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 .op-status-actions>.op-interest-button{flex:0 0 auto}
 @media(max-width:390px){.op-status-actions{gap:9px}}
 
-.op-status{display:inline-flex;align-items:center;justify-content:space-between;gap:7px;width:166px;max-width:100%;min-height:37px;padding:7px 10px;border-radius:999px;border:1px solid transparent;font-size:11px;line-height:1.2;white-space:nowrap}
+.op-status{display:inline-flex;align-items:center;justify-content:flex-start;gap:6px;width:fit-content;max-width:100%;min-height:37px;padding:7px 10px;border-radius:999px;border:1px solid transparent;font-size:11px;line-height:1.2;white-space:nowrap}
 .op-status-details summary{list-style:none;cursor:pointer;user-select:none}
 .op-status-details summary::-webkit-details-marker{display:none}
 .op-status-details summary::marker{content:''}
 .op-status-details summary:focus-visible{outline:3px solid #EF185D;outline-offset:3px}
 .op-status-details summary:hover{filter:brightness(.97)}
-.op-status-details summary .op-status-chevron{display:inline-block;margin-left:auto;font-size:14px;line-height:1;transition:transform .2s ease;flex-shrink:0}
+.op-status-details summary .op-status-chevron{display:inline-block;margin-left:1px;font-size:14px;line-height:1;transition:transform .2s ease;flex-shrink:0}
 .op-status-details[open] summary .op-status-chevron{transform:rotate(180deg)}
 .op-status-details[open] summary{border-radius:14px}
 .op-status-icon{display:inline-flex;align-items:center;justify-content:center;flex:0 0 14px;width:14px;font-size:13px;font-weight:800}
-.op-status-copy{min-width:0;display:inline-flex;align-items:center;flex:1;white-space:nowrap}
+.op-status-copy{min-width:0;display:inline-flex;align-items:center;flex:0 1 auto;white-space:nowrap}
 .op-status-label{font-size:10px;letter-spacing:.015em;text-transform:uppercase;font-weight:800;white-space:nowrap}
 .op-status-message{font-size:11px;font-weight:600}
 .op-status.open-now{background:#E4F6E9;border-color:#A7D8B7;color:#23683F}
