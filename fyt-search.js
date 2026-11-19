@@ -87,12 +87,23 @@ function openingDate(o){
 }
 function order(o){
  const due=parseDate(o.applicationDeadline),status=String(o.applicationStatus||'');
- if(status==='Opening Later'){const opening=openingDate(o);return [1,opening?opening.getTime():Infinity,due?due.getTime():Infinity];}
- if(due&&due>=today())return [0,due.getTime(),0];
- if(status==='Open Now')return [0,Infinity,1];
- if(status==='Year-Round'||status==='Ongoing / Check Availability')return [2,0,0];
- if(status==='Previously Offered'||o.programCycle==='Previously Offered — Next Cycle Unconfirmed')return [4,0,0];
- return [3,0,0];
+ // Match the four public-facing status groups, even when a program has a
+ // future deadline but the current application window has not opened yet.
+ // 0: Open, 1: Check availability, 2: Opens later, 3: Previously offered.
+ if(status==='Previously Offered'||o.programCycle==='Previously Offered — Next Cycle Unconfirmed')
+  return [3,Infinity,Infinity];
+ if(status==='Opening Later'){
+  const opening=openingDate(o);
+  return [2,opening?opening.getTime():Infinity,due?due.getTime():Infinity];
+ }
+ if(status==='Check Availability'||!status)
+  return [1,due&&due>=today()?due.getTime():Infinity,Infinity];
+ if(status==='Open Now'||status==='Deadline Listed'||status==='Year-Round'||status==='Ongoing / Check Availability'){
+  // Dated Open listings come first by nearest upcoming deadline; ongoing
+  // and year-round listings follow other Open programs.
+  return [0,due&&due>=today()?due.getTime():Infinity,0];
+ }
+ return [1,Infinity,Infinity];
 }
 function sort(a,b){
  const x=order(a),y=order(b);
