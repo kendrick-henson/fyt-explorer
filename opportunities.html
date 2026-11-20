@@ -32,7 +32,6 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 .op-fact+.op-fact{border-left:1px solid #d9d0e7}
 .op-fact-label{color:#766d83;font-size:11px;font-weight:700;display:flex;align-items:center;gap:4px;line-height:1.25}
 .op-fact-value{color:#292634;font-size:12px;font-weight:700;overflow-wrap:anywhere;line-height:1.4}
-.op-fact-icon{font-size:12px;line-height:1;flex-shrink:0}
 .op-summary .op-tags{border-top:1px solid #e3dcee;padding-top:11px}
 @media(min-width:651px) and (max-width:1100px){.op-summary{padding:12px 10px}.op-fact{padding:0 6px}.op-fact-value{font-size:11px}}
 
@@ -361,17 +360,13 @@ card.append(statusActions);
 card.append(element('p',cardDescription(o),'op-description'));
 const summary=element('div','','op-summary');
 const meta=element('div','','op-meta');
-for(const [icon,label,value] of [
-  ['♧','Grades',list(o.eligibleGrades).join(', ')||'Not listed'],
-  ['▤','Type',o.type||'Not listed'],
-  ['◇','Cost',displayCost(o)]
+for(const [label,value] of [
+  ['Grades',list(o.eligibleGrades).join(', ')||'Not listed'],
+  ['Type',o.type||'Not listed'],
+  ['Cost',displayCost(o)]
 ]){
   const fact=element('div','','op-fact');
-  const heading=element('span','','op-fact-label');
-  const symbol=element('span',icon,'op-fact-icon');
-  symbol.setAttribute('aria-hidden','true');
-  heading.append(symbol,document.createTextNode(label));
-  fact.append(heading,element('span',value,'op-fact-value'));
+  fact.append(element('span',label,'op-fact-label'),element('span',value,'op-fact-value'));
   meta.append(fact);
 }
 summary.append(meta);
