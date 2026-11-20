@@ -76,7 +76,7 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 .op-request-buttons button{font:inherit;font-weight:700;border-radius:9px;padding:11px 17px;border:0;cursor:pointer}
 .op-request-buttons button[type=submit]{background:#ef185d;color:white}
 .op-request-buttons button[type=button]{background:#eee;color:#333}
-.op-links{display:flex;gap:9px;flex-wrap:wrap;margin-top:0}.op-links a{background:#ef185d;color:white;border-radius:8px;text-decoration:none;padding:10px 12px;font-weight:700;font-size:13px}.op-links a:hover{background:#c6124d}
+.op-links{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:0}.op-links a{background:#ef185d;color:white;border-radius:8px;text-decoration:none;padding:10px 12px;font-weight:700;font-size:13px}.op-links a:hover{background:#c6124d}
 .directory-footer-action{text-align:center;margin-top:30px}.directory-footer-action .section-action-link{display:inline-block}
 .op-notice{background:white;border:1px solid #e6dfeb;border-radius:14px;padding:28px;max-width:750px}
 .op-home{display:inline-block;color:#333333;text-decoration:underline;margin-top:12px}
@@ -346,12 +346,6 @@ const card=element('article','','op-item');
 card.append(element('h2',o.name));
 const statusActions=element('div','','op-status-actions');
 statusActions.append(statusBanner(o));
-if(intakeUrl){
-  const action=element('button','I’m Interested ♡','op-interest-button');
-  action.type='button';
-  action.addEventListener('click',()=>openInterest(o));
-  statusActions.append(action);
-}
 card.append(statusActions);
 card.append(element('p',cardDescription(o),'op-description'));
 const meta=element('div','','op-meta');meta.append(element('span','Grades: '+list(o.eligibleGrades).join(', ')));if(o.type)meta.append(element('span','Type: '+o.type));meta.append(element('span','Cost: '+displayCost(o)));card.append(meta);
@@ -361,8 +355,13 @@ const ct=element('span',cycleText);if(o.programCycle==='Previously Offered — N
 // Fellow-facing update appears once inside the status banner near the card title.
 const links=element('div','','op-links');
 const url=safeUrl(o.url);if(url){const a=element('a','Explore program ↗');a.href=url;a.target='_blank';a.rel='noopener noreferrer';links.append(a)}
-
-// Interest requests are shown beneath the deadline; Explore Program remains the footer action.
+if(intakeUrl){
+  const action=element('button','I’m Interested ♡','op-interest-button');
+  action.type='button';
+  action.addEventListener('click',()=>openInterest(o));
+  links.append(action);
+}
+// Keep both actions together at the bottom of each opportunity card.
 card.append(links);results.append(card);
 }
 }
