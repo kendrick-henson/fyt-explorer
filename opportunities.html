@@ -18,13 +18,24 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 .op-count{display:flex;justify-content:space-between;align-items:center;gap:15px;margin:18px 0;flex-wrap:wrap;color:#696570;font-size:14px}
 .op-count button{color:#333333;text-decoration:underline;border:none;background:none;cursor:pointer;font-weight:700}
 .op-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
-.op-item{border:1px solid #e6dfeb;background:white;border-radius:15px;padding:22px;display:grid;grid-template-rows:minmax(3.45em,auto) minmax(42px,auto) minmax(6.2em,auto) minmax(5.4em,auto) 1fr auto;gap:12px;min-width:0;align-content:start}
+.op-item{border:1px solid #e6dfeb;background:white;border-radius:15px;padding:22px;display:grid;grid-template-rows:minmax(3.45em,auto) auto minmax(0,1fr) auto auto;gap:13px;min-width:0;align-content:stretch}
 .op-item h2{font-size:20px;color:#282536;margin:0;overflow-wrap:anywhere}
-.op-tags{display:flex;gap:5px;flex-wrap:wrap;align-content:end;align-items:flex-end;align-self:end;padding-top:8px;min-height:41px}.op-tags span{background:#ede7f8;color:#333333;font-size:11px;border-radius:40px;padding:4px 8px;font-weight:700}
+.op-tags{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:12px}.op-tags span{background:#e8e1f5;color:#333333;font-size:11px;border-radius:40px;padding:4px 9px;font-weight:700}
 .op-tags span.past{background:#f7ead7;color:#704d24}
 .op-item p{margin:0;font-size:14px}
 .op-description{line-height:1.55}
-.op-item .op-meta{color:#5b5763;font-size:12px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;line-height:1.45}
+.op-summary{background:#f4f0fa;border:1px solid #eee7f5;border-radius:14px;padding:15px 13px 13px;min-width:0}
+.op-item .op-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;color:#282536;min-width:0}
+.op-fact{min-width:0;padding:0 9px;display:flex;flex-direction:column;gap:5px}
+.op-fact:first-child{padding-left:0}
+.op-fact:last-child{padding-right:0}
+.op-fact+.op-fact{border-left:1px solid #d9d0e7}
+.op-fact-label{color:#766d83;font-size:11px;font-weight:700;display:flex;align-items:center;gap:4px;line-height:1.25}
+.op-fact-value{color:#292634;font-size:12px;font-weight:700;overflow-wrap:anywhere;line-height:1.4}
+.op-fact-icon{font-size:12px;line-height:1;flex-shrink:0}
+.op-summary .op-tags{border-top:1px solid #e3dcee;padding-top:11px}
+@media(min-width:651px) and (max-width:1100px){.op-summary{padding:12px 10px}.op-fact{padding:0 6px}.op-fact-value{font-size:11px}}
+
 /* Clickable colored status pill; the expanded explanation lives inside it. */
 .op-status-wrap{min-width:0}
 .op-status-details{min-width:0;max-width:100%}
@@ -76,12 +87,12 @@ body{background:#faf8f4}.op-main{padding:58px 0 95px}.op-main h1{font-size:clamp
 .op-request-buttons button{font:inherit;font-weight:700;border-radius:9px;padding:11px 17px;border:0;cursor:pointer}
 .op-request-buttons button[type=submit]{background:#ef185d;color:white}
 .op-request-buttons button[type=button]{background:#eee;color:#333}
-.op-links{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:0}.op-links a{background:#ef185d;color:white;border-radius:8px;text-decoration:none;padding:10px 12px;font-weight:700;font-size:13px}.op-links a:hover{background:#c6124d}
+.op-links{display:flex;align-items:stretch;gap:9px;flex-wrap:wrap;margin-top:0}.op-links a,.op-links button{display:inline-flex;align-items:center;justify-content:center;min-height:41px;text-align:center}.op-links a{background:#ef185d;color:white;border-radius:8px;text-decoration:none;padding:10px 12px;font-weight:700;font-size:13px}.op-links a:hover{background:#c6124d}
 .directory-footer-action{text-align:center;margin-top:30px}.directory-footer-action .section-action-link{display:inline-block}
 .op-notice{background:white;border:1px solid #e6dfeb;border-radius:14px;padding:28px;max-width:750px}
 .op-home{display:inline-block;color:#333333;text-decoration:underline;margin-top:12px}
 @media(max-width:950px){.op-grid{grid-template-columns:repeat(2,1fr)}.op-filters{grid-template-columns:1fr 1fr}}
-@media(max-width:650px){.op-grid,.op-filters{grid-template-columns:1fr}.op-main{padding:35px 0 65px}.op-item{grid-template-rows:auto auto auto auto 1fr auto;gap:11px}.op-tags{min-height:0}}
+@media(max-width:650px){.op-grid,.op-filters{grid-template-columns:1fr}.op-main{padding:35px 0 65px}.op-item{grid-template-rows:auto auto minmax(0,1fr) auto auto;gap:12px}.op-summary{padding:15px}.op-fact-value{font-size:12px}}
 </style>
 </head>
 <body>
@@ -348,10 +359,25 @@ const statusActions=element('div','','op-status-actions');
 statusActions.append(statusBanner(o));
 card.append(statusActions);
 card.append(element('p',cardDescription(o),'op-description'));
-const meta=element('div','','op-meta');meta.append(element('span','Grades: '+list(o.eligibleGrades).join(', ')));if(o.type)meta.append(element('span','Type: '+o.type));meta.append(element('span','Cost: '+displayCost(o)));card.append(meta);
+const summary=element('div','','op-summary');
+const meta=element('div','','op-meta');
+for(const [icon,label,value] of [
+  ['♧','Grades',list(o.eligibleGrades).join(', ')||'Not listed'],
+  ['▤','Type',o.type||'Not listed'],
+  ['◇','Cost',displayCost(o)]
+]){
+  const fact=element('div','','op-fact');
+  const heading=element('span','','op-fact-label');
+  const symbol=element('span',icon,'op-fact-icon');
+  symbol.setAttribute('aria-hidden','true');
+  heading.append(symbol,document.createTextNode(label));
+  fact.append(heading,element('span',value,'op-fact-value'));
+  meta.append(fact);
+}
+summary.append(meta);
 const tags=element('div','','op-tags');for(const t of list(o.careerCommunities))tags.append(element('span',t));
 const cycleText=o.programCycle==='Previously Offered — Next Cycle Unconfirmed'?'Previously offered':o.programCycle;
-const ct=element('span',cycleText);if(o.programCycle==='Previously Offered — Next Cycle Unconfirmed')ct.className='past';tags.append(ct);card.append(tags);
+const ct=element('span',cycleText);if(o.programCycle==='Previously Offered — Next Cycle Unconfirmed')ct.className='past';tags.append(ct);summary.append(tags);card.append(summary);
 // Fellow-facing update appears once inside the status banner near the card title.
 const links=element('div','','op-links');
 const url=safeUrl(o.url);if(url){const a=element('a','Explore program ↗');a.href=url;a.target='_blank';a.rel='noopener noreferrer';links.append(a)}
